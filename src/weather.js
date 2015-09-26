@@ -224,14 +224,16 @@ function SendToPebble(pos, use_default) {
   var url_AVWX;
   var url_OWM;
   var url_OWM_forecast;
+  
+  var multiplier = 100;
+  var pos_lat = Math.round(multiplier*pos.coords.latitude)/multiplier;
+  var pos_lon = Math.round(multiplier*pos.coords.longitude)/multiplier;
+  console.log("pos_lat = " + pos_lat);
+  console.log("pos_lon = " + pos_lon);
+  
   // Construct URL
   console.log("conf.auto_loc = " + configuration.autodetect_loc);
   if ((use_default === 0) && (configuration.autodetect_loc)){
-    var multiplier = 100;
-    var pos_lat = Math.round(multiplier*pos.coords.latitude)/multiplier;
-    var pos_lon = Math.round(multiplier*pos.coords.longitude)/multiplier;
-    console.log("pos_lat = " + pos_lat);
-    console.log("pos_lon = " + pos_lon);
     url_OWM = "http://api.openweathermap.org/data/2.5/weather?lat=" +
         pos_lat + "&lon=" + pos_lon + "&lang=" + configuration.lang_id;
     url_OWM_forecast = "http://api.openweathermap.org/data/2.5/forecast?lat=" +
@@ -309,345 +311,374 @@ function SendToPebble(pos, use_default) {
               
               
               //---------------------------------------------------------------------------------------------------
-              var conditions_icon = 73;
-              var sunrise = "--:--";
-              var sunset  = "--:--";
-              var sunrise_unix = 0;
-              var sunset_unix  = 0;
-              if (!DataJSON_OWM_error){
-                // Conditions
-                //var conditions = WeatherDataJSON.weather[0].description;
-                //console.log("Conditions are " + conditions);
-                
-                // Location:
-                var location_name = DataJSON_OWM.name;
-                if (use_default){
-                  location_name = "*" + location_name + "*";
-                }
-                
-                conditions_icon = OWMclimacon[DataJSON_OWM.weather[0].id].charCodeAt(0);
-                console.log("Conditions icon:  " + conditions_icon);
-                sunrise_unix    = DataJSON_OWM.sys.sunrise;
-                sunset_unix     = DataJSON_OWM.sys.sunset;
-                console.log("sun rise unix = "+sunrise_unix);
-                console.log("sun set  unix = "+sunset_unix);
-                sunrise = timeConverter(Math.round(DataJSON_OWM.sys.sunrise));
-                sunset  = timeConverter(Math.round(DataJSON_OWM.sys.sunset));
-                console.log("sun rise      = " + sunrise);
-                console.log("sun set       = " + sunset);
-                //sunrise_unix = sunrise_unix - utc_offset;
-                //sunset_unix  = sunset_unix  - utc_offset;
-              }
-
               
-              
-              console.log(JSON.stringify(DataJSON_AVWX, null, 2));
-              
-              console.log("DataJSON_AVWX.Station             --> " + DataJSON_AVWX.Station);
-              console.log("DataJSON_AVWX.Temperature         --> " + DataJSON_AVWX.Temperature);
-              console.log("DataJSON_AVWX.Altimeter           --> " + DataJSON_AVWX.Altimeter);
-              console.log("DataJSON_AVWX.Dewpoint            --> " + DataJSON_AVWX.Dewpoint);
-              console.log("DataJSON_AVWX['Cloud-List']       --> " + DataJSON_AVWX["Cloud-List"]);
-              console.log("DataJSON_AVWX['Other-List']       --> " + DataJSON_AVWX["Other-List"]);
-              console.log("DataJSON_AVWX.Time                --> " + DataJSON_AVWX.Time);
-              console.log("DataJSON_AVWX.Units.Altimeter     --> " + DataJSON_AVWX.Units.Altimeter);
-              console.log("DataJSON_AVWX.Units.Temperature   --> " + DataJSON_AVWX.Units.Temperature);
-              console.log("DataJSON_AVWX.Units['Wind-Speed'] --> " + DataJSON_AVWX.Units["Wind-Speed"]);
-              console.log("DataJSON_AVWX['Wind-Speed']       --> " + DataJSON_AVWX["Wind-Speed"]);
-              console.log("DataJSON_AVWX['Wind-Direction']   --> " + DataJSON_AVWX["Wind-Direction"]);
-              console.log("DataJSON_AVWX.Remarks             --> " + DataJSON_AVWX.Remarks);
-            
-              // Station:
-              var station_name = DataJSON_AVWX.Station;
-              if (use_default){
-                station_name = "*" + station_name + "*";
-              }
-              console.log("location_name = " + location_name);
-              console.log("station_name  = " + station_name);
-              console.log("LATITUDE      = " + pos.coords.latitude);
-              console.log("LONGITUDE     = " + pos.coords.longitude);
-              
-              
-              //METAR infos:
-              var wind_info   = DataJSON_AVWX["Wind-Direction"] + "__/" + DataJSON_AVWX["Wind-Speed"] + "" + DataJSON_AVWX.Units["Wind-Speed"];
-              var wind_gust   = " ";
-              if (DataJSON_AVWX["Wind-Gust"] !== ""){
-                wind_gust   = DataJSON_AVWX["Wind-Gust"] + DataJSON_AVWX.Units["Wind-Speed"];
-              }
-              var temperature = DataJSON_AVWX.Temperature + "__" + DataJSON_AVWX.Units.Temperature;
-              var temp_dew_p  = DataJSON_AVWX.Temperature + "__" + DataJSON_AVWX.Units.Temperature + " (D." + DataJSON_AVWX.Dewpoint + "__)";
-              var dew_point   = "D." + DataJSON_AVWX.Dewpoint + "__" + DataJSON_AVWX.Units.Temperature;
-              var altimeter   = DataJSON_AVWX.Altimeter + " " + DataJSON_AVWX.Units.Altimeter;
-              var otherlist   = DataJSON_AVWX["Other-List"];
-              var remarks     = DataJSON_AVWX.Remarks;
-              var cloudlist   = DataJSON_AVWX["Cloud-List"];
-              var flight_rules = DataJSON_AVWX["Flight-Rules"];
-              var runway_vis  = DataJSON_AVWX["Runway-Visibility"];
-              var visibility  = DataJSON_AVWX["Visibility"] + DataJSON_AVWX.Units["Visibility"];
-              
-              
-              var temp_color_celsius = DataJSON_AVWX.Temperature;
-              if (DataJSON_AVWX.Units.Temperature == "F") {
-                temp_color_celsius = (DataJSON_AVWX.Temperature - 32)*5/9;
-                console.log("Converted from " + DataJSON_AVWX.Temperature + "F to " + temp_color_celsius + "C");
-              }
-              console.log("temp_color_celsius = " + temp_color_celsius);
-              
-              //cloudlist = JSON.stringify(cloudlist);
-              
-              var foo = cloudlist;
-              var cloudlist_str = " ";
-              var otherlist_str = " ";
-              
-              var j = 0;
-              var key_value_pair;
-              for(var i in foo) {
-                key_value_pair = String(foo[i]);
-                key_value_pair = key_value_pair.split(",").join("");
-                console.log("key_value_pair = " + key_value_pair);
-                if (j === 0) cloudlist_str = key_value_pair; else cloudlist_str = cloudlist_str + " " + key_value_pair;
-                j++;
-              }
-              j = 0;
-              foo = otherlist;
-              for(var i in foo) {
-                key_value_pair = String(foo[i]);
-                key_value_pair = key_value_pair.split(",").join("");
-                console.log("key_value_pair = " + key_value_pair);
-                if (j === 0) otherlist_str = key_value_pair; else otherlist_str = otherlist_str + " " + key_value_pair;
-                j++;
-              }
-              
-              var time_of_last_data = 0; //time of data on server in Unix Timestamp (UTC !!!)
-              ;
-              var time_of_last_data_example = 1439136487;
-              time_of_last_data = convertAVWXTimeToUnix(DataJSON_AVWX.Time);
-              if (configuration.show_update_time == 2){
-                time_of_last_data = Number(DataJSON_OWM.dt);
-              }
-              
-              
-              
-              //Additional OWM infos:
-              
-              // Get Min/Max temp. from forecast:
-              console.log("OWM_forecast_list has " + DataJSON_OWM_forecast.cnt + " elements");
-              var Forecast = {
-                TempMin: 10000, // in Kelvin
-                TempMax:     0  // in Kelvin
-              };
-              if (!DataJSON_OWM_fc_error){
-                var i;
-                for (i = 0; i < Math.min(DataJSON_OWM_forecast.cnt, 8); i++) { // 8 entries means 24 hours for 3 hour forecast
-                  console.log("forecast_list[" + i + "].dt_text = "+DataJSON_OWM_forecast.list[i].dt_txt+"; T = " + (DataJSON_OWM_forecast.list[i].main.temp - 273.15) + " C");
-                  Forecast.TempMin = Math.min(DataJSON_OWM_forecast.list[i].main.temp, Forecast.TempMin);
-                  Forecast.TempMax = Math.max(DataJSON_OWM_forecast.list[i].main.temp, Forecast.TempMax);
-                }
-              }
-              var OWM_ForecastMinMax = "";
-              if ((Forecast.TempMin == 10000) || (Forecast.TempMax === 0)){
-                OWM_ForecastMinMax = " --/-- ";
-              } else {
-                if (DataJSON_AVWX.Units.Temperature == "F") {
-                  OWM_ForecastMinMax = Math.round((Forecast.TempMax-273.15)*1.8+32) + "__/" + Math.round((Forecast.TempMin-273.15)*1.8+32) + "__F";
-                } else {
-                  OWM_ForecastMinMax = Math.round((Forecast.TempMax-273.15)) + "__/" + Math.round((Forecast.TempMin-273.15)) + "__C";
-                }
-              }
-              console.log("Forecast.TempMin = "+Forecast.TempMin);
-              console.log("Forecast.TempMax = "+Forecast.TempMax);
-              console.log("OWM_ForecastMinMax = "+OWM_ForecastMinMax);
-              
-              
-              
-              // Conditions
-              var OWM_conditions = DataJSON_OWM.weather[0].description;
-              console.log("OWM_conditions are: " + OWM_conditions);
-              
-              var OWM_temperature_K = Math.round((DataJSON_OWM.main.temp)) + " K";
-              var OWM_temperature_C = Math.round((DataJSON_OWM.main.temp - 273.15)) + "__C";
-              var OWM_temperature_F = Math.round((DataJSON_OWM.main.temp - 273.15)*1.8+32) + "__F";
-              console.log("OWM_temperature_K = " + OWM_temperature_K);
-              console.log("OWM_temperature_C = " + OWM_temperature_C);
-              console.log("OWM_temperature_F = " + OWM_temperature_F);
-              
-              var OWM_humidity = Math.round(DataJSON_OWM.main.humidity) + " %";
-              console.log("OWM_humidity = " + OWM_humidity);
-              
-              var OWM_pressure_hPa  = Math.round(DataJSON_OWM.main.pressure) + " hPa";
-              var OWM_pressure_mmHg = Math.round(DataJSON_OWM.main.pressure/1.333) + " mmHg";
-              var OWM_pressure_inHg = Math.round(DataJSON_OWM.main.pressure/33.86389*100)/100 + " inHg";
-              console.log("OWM_pressure_hPa  = " + OWM_pressure_hPa);
-              console.log("OWM_pressure_mmHg = " + OWM_pressure_mmHg);
-              console.log("OWM_pressure_inHg = " + OWM_pressure_inHg);
-              
-              var OWM_wind_info_ms  = DataJSON_OWM.wind.speed + " m/s(" + DataJSON_OWM.wind.gust + ") " + DataJSON_OWM.wind.deg + "__";
-              var OWM_wind_info_km  = Math.round(DataJSON_OWM.wind.speed*3.6) + " km/h(" + Math.round(DataJSON_OWM.wind.gust*3.6) + ") " + DataJSON_OWM.wind.deg + "__";
-              var OWM_wind_info_mh  = Math.round(DataJSON_OWM.wind.speed*2.236) + " mph(" + Math.round(DataJSON_OWM.wind.gust*2.236) + ") " + DataJSON_OWM.wind.deg + "__";
-              var OWM_wind_info_kt  = Math.round(DataJSON_OWM.wind.speed*1.944) + " kts(" + Math.round(DataJSON_OWM.wind.gust*1.944) + ") " + DataJSON_OWM.wind.deg + "__";
-              console.log("OWM_wind_info_ms  = " + OWM_wind_info_ms);
-              console.log("OWM_wind_info_km  = " + OWM_wind_info_km);
-              console.log("OWM_wind_info_mh  = " + OWM_wind_info_mh);
-              console.log("OWM_wind_info_kt  = " + OWM_wind_info_kt);
-              
-              
-              
-              var WeatherInfoList = [
-                "",             // i =  0
-                location_name,  // i =  1
-                station_name,   // i =  2
-                wind_info,      // i =  3
-                wind_gust,      // i =  4
-                temperature,    // i =  5
-                temp_dew_p,     // i =  6
-                dew_point,      // i =  7
-                cloudlist_str,  // i =  8
-                otherlist_str,  // i =  9
-                altimeter,      // i = 10
-                remarks,        // i = 11
-                flight_rules,   // i = 12
-                runway_vis,     // i = 13
-                visibility,     // i = 14
-                OWM_ForecastMinMax, // i = 15
-                OWM_conditions,     // i = 16
-                OWM_temperature_K,  // i = 17
-                OWM_temperature_C,  // i = 18
-                OWM_temperature_F,  // i = 19
-                OWM_humidity,       // i = 20
-                OWM_pressure_hPa,   // i = 21
-                OWM_pressure_mmHg,  // i = 22
-                OWM_pressure_inHg,  // i = 23
-                OWM_wind_info_ms,   // i = 24
-                OWM_wind_info_km,   // i = 25
-                OWM_wind_info_mh,   // i = 26
-                OWM_wind_info_kt    // i = 27
-              ];
-              
-              var max_index = 27;
-              
-              if (configuration.weatherInfo1 < 0) configuration.weatherInfo1 = 0;
-              if (configuration.weatherInfo2 < 0) configuration.weatherInfo2 = 0;
-              if (configuration.weatherInfo3 < 0) configuration.weatherInfo3 = 0;
-              if (configuration.weatherInfo4 < 0) configuration.weatherInfo4 = 0;
-              if (configuration.weatherInfo5 < 0) configuration.weatherInfo5 = 0;
-              if (configuration.weatherInfo6 < 0) configuration.weatherInfo6 = 0;
-              if (configuration.weatherInfo7 < 0) configuration.weatherInfo7 = 0;
-              if (configuration.weatherInfo8_1 < 0) configuration.weatherInfo8_1 = 0;
-              if (configuration.weatherInfo8_2 < 0) configuration.weatherInfo8_2 = 0;
-              if (configuration.weatherInfo8_3 < 0) configuration.weatherInfo8_3 = 0;
-              if (configuration.weatherInfo1 > max_index) configuration.weatherInfo1 = max_index;
-              if (configuration.weatherInfo2 > max_index) configuration.weatherInfo2 = max_index;
-              if (configuration.weatherInfo3 > max_index) configuration.weatherInfo3 = max_index;
-              if (configuration.weatherInfo4 > max_index) configuration.weatherInfo4 = max_index;
-              if (configuration.weatherInfo5 > max_index) configuration.weatherInfo5 = max_index;
-              if (configuration.weatherInfo6 > max_index) configuration.weatherInfo6 = max_index;
-              if (configuration.weatherInfo7 > max_index) configuration.weatherInfo7 = max_index;
-              if (configuration.weatherInfo8_1 > max_index) configuration.weatherInfo8_1 = max_index;
-              if (configuration.weatherInfo8_2 > max_index) configuration.weatherInfo8_2 = max_index;
-              if (configuration.weatherInfo8_3 > max_index) configuration.weatherInfo8_3 = max_index;
-              
-              var WeatherInfoStr_1   = WeatherInfoList[configuration.weatherInfo1];
-              var WeatherInfoStr_2   = WeatherInfoList[configuration.weatherInfo2];
-              var WeatherInfoStr_3   = WeatherInfoList[configuration.weatherInfo3];
-              var WeatherInfoStr_4   = WeatherInfoList[configuration.weatherInfo4];
-              var WeatherInfoStr_5   = WeatherInfoList[configuration.weatherInfo5];
-              var WeatherInfoStr_6   = WeatherInfoList[configuration.weatherInfo6];
-              var WeatherInfoStr_7   = WeatherInfoList[configuration.weatherInfo7];
-              var WeatherInfoStr_8_1 = WeatherInfoList[configuration.weatherInfo8_1];
-              var WeatherInfoStr_8_2 = WeatherInfoList[configuration.weatherInfo8_2];
-              var WeatherInfoStr_8_3 = WeatherInfoList[configuration.weatherInfo8_3];
-              
-              console.log("WeatherInfoStr_1   = " + WeatherInfoStr_1);
-              console.log("WeatherInfoStr_2   = " + WeatherInfoStr_2);
-              console.log("WeatherInfoStr_3   = " + WeatherInfoStr_3);
-              console.log("WeatherInfoStr_4   = " + WeatherInfoStr_4);
-              console.log("WeatherInfoStr_5   = " + WeatherInfoStr_5);
-              console.log("WeatherInfoStr_6   = " + WeatherInfoStr_6);
-              console.log("WeatherInfoStr_7   = " + WeatherInfoStr_7);
-              console.log("WeatherInfoStr_8_1 = " + WeatherInfoStr_8_1);
-              console.log("WeatherInfoStr_8_2 = " + WeatherInfoStr_8_2);
-              console.log("WeatherInfoStr_8_3 = " + WeatherInfoStr_8_3);
-                
+              if (!DataJSON_AVWX_error){
+                var conditions_icon = 73;
+                var sunrise = "--:--";
+                var sunset  = "--:--";
+                var sunrise_unix = 0;
+                var sunset_unix  = 0;
+                if (!DataJSON_OWM_error){
+                  // Conditions
+                  //var conditions = WeatherDataJSON.weather[0].description;
+                  //console.log("Conditions are " + conditions);
                   
-              var weather_Line_1 = WeatherInfoStr_1 + " " + WeatherInfoStr_2;
-              var weather_Line_2 = WeatherInfoStr_5;
-              var weather_Line_3 = WeatherInfoStr_6 + "\n" + WeatherInfoStr_7;
-              var weather_Line_4 = WeatherInfoStr_3 + " " + WeatherInfoStr_4;
-              var weather_Line_5 = WeatherInfoStr_8_1 + " " + WeatherInfoStr_8_2 + " " + WeatherInfoStr_8_3;
-              var weather_Line_6 = "";
-              var weather_Line_7 = "";
-              var weather_Line_8 = "";
-              var weather_Line_9 = "";
+                  // Location:
+                  var location_name = DataJSON_OWM.name;
+                  if (use_default){
+                    location_name = "*" + location_name + "*";
+                  }
+                  
+                  conditions_icon = OWMclimacon[DataJSON_OWM.weather[0].id].charCodeAt(0);
+                  console.log("Conditions icon:  " + conditions_icon);
+                  sunrise_unix    = DataJSON_OWM.sys.sunrise;
+                  sunset_unix     = DataJSON_OWM.sys.sunset;
+                  console.log("sun rise unix = "+sunrise_unix);
+                  console.log("sun set  unix = "+sunset_unix);
+                  sunrise = timeConverter(Math.round(DataJSON_OWM.sys.sunrise));
+                  sunset  = timeConverter(Math.round(DataJSON_OWM.sys.sunset));
+                  console.log("sun rise      = " + sunrise);
+                  console.log("sun set       = " + sunset);
+                  //sunrise_unix = sunrise_unix - utc_offset;
+                  //sunset_unix  = sunset_unix  - utc_offset;
+                }
+  
+                
+                
+                console.log(JSON.stringify(DataJSON_AVWX, null, 2));
+                
+                console.log("DataJSON_AVWX.Station             --> " + DataJSON_AVWX.Station);
+                console.log("DataJSON_AVWX.Temperature         --> " + DataJSON_AVWX.Temperature);
+                console.log("DataJSON_AVWX.Altimeter           --> " + DataJSON_AVWX.Altimeter);
+                console.log("DataJSON_AVWX.Dewpoint            --> " + DataJSON_AVWX.Dewpoint);
+                console.log("DataJSON_AVWX['Cloud-List']       --> " + DataJSON_AVWX["Cloud-List"]);
+                console.log("DataJSON_AVWX['Other-List']       --> " + DataJSON_AVWX["Other-List"]);
+                console.log("DataJSON_AVWX.Time                --> " + DataJSON_AVWX.Time);
+                console.log("DataJSON_AVWX.Units.Altimeter     --> " + DataJSON_AVWX.Units.Altimeter);
+                console.log("DataJSON_AVWX.Units.Temperature   --> " + DataJSON_AVWX.Units.Temperature);
+                console.log("DataJSON_AVWX.Units['Wind-Speed'] --> " + DataJSON_AVWX.Units["Wind-Speed"]);
+                console.log("DataJSON_AVWX['Wind-Speed']       --> " + DataJSON_AVWX["Wind-Speed"]);
+                console.log("DataJSON_AVWX['Wind-Direction']   --> " + DataJSON_AVWX["Wind-Direction"]);
+                console.log("DataJSON_AVWX.Remarks             --> " + DataJSON_AVWX.Remarks);
               
-              console.log("weather_Line_1 = " + weather_Line_1);
-              console.log("weather_Line_2 = " + weather_Line_2);
-              console.log("weather_Line_3 = " + weather_Line_3);
-              console.log("weather_Line_4 = " + weather_Line_4);
-              console.log("weather_Line_5 = " + weather_Line_5);
-              console.log("weather_Line_6 = " + weather_Line_6);
-              console.log("weather_Line_7 = " + weather_Line_7);
-              console.log("weather_Line_8 = " + weather_Line_8);
-              console.log("weather_Line_9 = " + weather_Line_9);
+                // Station:
+                var station_name = DataJSON_AVWX.Station;
+                if (use_default){
+                  station_name = "*" + station_name + "*";
+                }
+                console.log("location_name = " + location_name);
+                console.log("station_name  = " + station_name);
+                console.log("LATITUDE      = " + pos.coords.latitude);
+                console.log("LONGITUDE     = " + pos.coords.longitude);
+                
+                
+                //METAR infos:
+                var wind_info   = DataJSON_AVWX["Wind-Direction"] + "__/" + DataJSON_AVWX["Wind-Speed"] + "" + DataJSON_AVWX.Units["Wind-Speed"];
+                var wind_gust   = " ";
+                if (DataJSON_AVWX["Wind-Gust"] !== ""){
+                  wind_gust   = DataJSON_AVWX["Wind-Gust"] + DataJSON_AVWX.Units["Wind-Speed"];
+                }
+                var temperature = DataJSON_AVWX.Temperature + "__" + DataJSON_AVWX.Units.Temperature;
+                var temp_dew_p  = DataJSON_AVWX.Temperature + "__" + DataJSON_AVWX.Units.Temperature + " (D." + DataJSON_AVWX.Dewpoint + "__)";
+                var dew_point   = "D." + DataJSON_AVWX.Dewpoint + "__" + DataJSON_AVWX.Units.Temperature;
+                var altimeter   = DataJSON_AVWX.Altimeter + " " + DataJSON_AVWX.Units.Altimeter;
+                var otherlist   = DataJSON_AVWX["Other-List"];
+                var remarks     = DataJSON_AVWX.Remarks;
+                var cloudlist   = DataJSON_AVWX["Cloud-List"];
+                var flight_rules = DataJSON_AVWX["Flight-Rules"];
+                var runway_vis  = DataJSON_AVWX["Runway-Visibility"];
+                var visibility  = DataJSON_AVWX["Visibility"] + DataJSON_AVWX.Units["Visibility"];
+                
+                
+                var temp_color_celsius = DataJSON_AVWX.Temperature;
+                if (DataJSON_AVWX.Units.Temperature == "F") {
+                  temp_color_celsius = (DataJSON_AVWX.Temperature - 32)*5/9;
+                  console.log("Converted from " + DataJSON_AVWX.Temperature + "F to " + temp_color_celsius + "C");
+                }
+                console.log("temp_color_celsius = " + temp_color_celsius);
+                
+                //cloudlist = JSON.stringify(cloudlist);
+                
+                var foo = cloudlist;
+                var cloudlist_str = " ";
+                var otherlist_str = " ";
+                
+                var j = 0;
+                var key_value_pair;
+                for(var i in foo) {
+                  key_value_pair = String(foo[i]);
+                  key_value_pair = key_value_pair.split(",").join("");
+                  console.log("key_value_pair = " + key_value_pair);
+                  if (j === 0) cloudlist_str = key_value_pair; else cloudlist_str = cloudlist_str + " " + key_value_pair;
+                  j++;
+                }
+                j = 0;
+                foo = otherlist;
+                for(var i in foo) {
+                  key_value_pair = String(foo[i]);
+                  key_value_pair = key_value_pair.split(",").join("");
+                  console.log("key_value_pair = " + key_value_pair);
+                  if (j === 0) otherlist_str = key_value_pair; else otherlist_str = otherlist_str + " " + key_value_pair;
+                  j++;
+                }
+                
+                var time_of_last_data = 0; //time of data on server in Unix Timestamp (UTC !!!)
+                ;
+                var time_of_last_data_example = 1439136487;
+                time_of_last_data = convertAVWXTimeToUnix(DataJSON_AVWX.Time);
+                if (!DataJSON_OWM_error){
+                  if (configuration.show_update_time == 2){
+                    time_of_last_data = Number(DataJSON_OWM.dt);
+                  }
+                }
+                
+                
+                
+                //Additional OWM infos:
+                
+                // Get Min/Max temp. from forecast:
+                var Forecast = {
+                  TempMin: 10000, // in Kelvin
+                  TempMax:     0  // in Kelvin
+                };
+                if (!DataJSON_OWM_fc_error){
+                  console.log("OWM_forecast_list has " + DataJSON_OWM_forecast.cnt + " elements");
+                  var i;
+                  for (i = 0; i < Math.min(DataJSON_OWM_forecast.cnt, 8); i++) { // 8 entries means 24 hours for 3 hour forecast
+                    console.log("forecast_list[" + i + "].dt_text = "+DataJSON_OWM_forecast.list[i].dt_txt+"; T = " + (DataJSON_OWM_forecast.list[i].main.temp - 273.15) + " C");
+                    Forecast.TempMin = Math.min(DataJSON_OWM_forecast.list[i].main.temp, Forecast.TempMin);
+                    Forecast.TempMax = Math.max(DataJSON_OWM_forecast.list[i].main.temp, Forecast.TempMax);
+                  }
+                }
+                var OWM_ForecastMinMax = "";
+                if ((Forecast.TempMin == 10000) || (Forecast.TempMax === 0)){
+                  OWM_ForecastMinMax = " --/-- ";
+                } else {
+                  if (DataJSON_AVWX.Units.Temperature == "F") {
+                    OWM_ForecastMinMax = Math.round((Forecast.TempMax-273.15)*1.8+32) + "__/" + Math.round((Forecast.TempMin-273.15)*1.8+32) + "__F";
+                  } else {
+                    OWM_ForecastMinMax = Math.round((Forecast.TempMax-273.15)) + "__/" + Math.round((Forecast.TempMin-273.15)) + "__C";
+                  }
+                }
+                console.log("Forecast.TempMin = "+Forecast.TempMin);
+                console.log("Forecast.TempMax = "+Forecast.TempMax);
+                console.log("OWM_ForecastMinMax = "+OWM_ForecastMinMax);
+                
+                
+                
+                var warn_location = 0;
+                if (!DataJSON_OWM_error){
+                  // Conditions
+                  var OWM_conditions = DataJSON_OWM.weather[0].description;
+                  console.log("OWM_conditions are: " + OWM_conditions);
+                  
+                  var OWM_temperature_K = Math.round((DataJSON_OWM.main.temp)) + " K";
+                  var OWM_temperature_C = Math.round((DataJSON_OWM.main.temp - 273.15)) + "__C";
+                  var OWM_temperature_F = Math.round((DataJSON_OWM.main.temp - 273.15)*1.8+32) + "__F";
+                  console.log("OWM_temperature_K = " + OWM_temperature_K);
+                  console.log("OWM_temperature_C = " + OWM_temperature_C);
+                  console.log("OWM_temperature_F = " + OWM_temperature_F);
+                  
+                  var OWM_humidity = Math.round(DataJSON_OWM.main.humidity) + " %";
+                  console.log("OWM_humidity = " + OWM_humidity);
+                  
+                  var OWM_pressure_hPa  = Math.round(DataJSON_OWM.main.pressure) + " hPa";
+                  var OWM_pressure_mmHg = Math.round(DataJSON_OWM.main.pressure/1.333) + " mmHg";
+                  var OWM_pressure_inHg = Math.round(DataJSON_OWM.main.pressure/33.86389*100)/100 + " inHg";
+                  console.log("OWM_pressure_hPa  = " + OWM_pressure_hPa);
+                  console.log("OWM_pressure_mmHg = " + OWM_pressure_mmHg);
+                  console.log("OWM_pressure_inHg = " + OWM_pressure_inHg);
+                  
+                  var OWM_wind_info_ms  = DataJSON_OWM.wind.speed + " m/s(" + DataJSON_OWM.wind.gust + ") " + DataJSON_OWM.wind.deg + "__";
+                  var OWM_wind_info_km  = Math.round(DataJSON_OWM.wind.speed*3.6) + " km/h(" + Math.round(DataJSON_OWM.wind.gust*3.6) + ") " + DataJSON_OWM.wind.deg + "__";
+                  var OWM_wind_info_mh  = Math.round(DataJSON_OWM.wind.speed*2.236) + " mph(" + Math.round(DataJSON_OWM.wind.gust*2.236) + ") " + DataJSON_OWM.wind.deg + "__";
+                  var OWM_wind_info_kt  = Math.round(DataJSON_OWM.wind.speed*1.944) + " kts(" + Math.round(DataJSON_OWM.wind.gust*1.944) + ") " + DataJSON_OWM.wind.deg + "__";
+                  console.log("OWM_wind_info_ms  = " + OWM_wind_info_ms);
+                  console.log("OWM_wind_info_km  = " + OWM_wind_info_km);
+                  console.log("OWM_wind_info_mh  = " + OWM_wind_info_mh);
+                  console.log("OWM_wind_info_kt  = " + OWM_wind_info_kt);
+                  
+                  
+                  
+                  if ((configuration.autodetect_loc) && (use_default)){ //tried autodection of location, but could not get the lat long values from phone, so used default location set by the user.
+                    warn_location = 1;
+                    console.log("Tried autodection of location, but could not get the lat long values from phone.");
+                  } 
+                  if ((configuration.autodetect_loc === 0) && (use_default === 0)){ //detected location, but used user input
+                    console.log("Could autodect location, but used user input instead.");
+                    console.log(" |lat_autodetect - user_lat| = " + Math.abs(DataJSON_OWM.coord.lat - pos_lat));
+                    console.log(" |lon_autodetect - user_lon| = " + Math.abs(DataJSON_OWM.coord.lon - pos_lon));
+                    console.log("pos_lat                   = " + pos_lat);
+                    console.log("DataJSON_OWM.coord.lat = " + DataJSON_OWM.coord.lat);
+                    console.log("pos_lon                   = " + pos_lon);
+                    console.log("DataJSON_OWM.coord.lon = " + DataJSON_OWM.coord.lon);
+                    if ((Math.abs(DataJSON_OWM.coord.lat - pos_lat) > 0.3) && (Math.abs(DataJSON_OWM.coord.lon - pos_lon) > 0.5)){
+                      console.log("User input location differs from autodeteced location.");
+                      warn_location = 1;
+                    }
+                  }
+                }
+                
+                
+                
+                var WeatherInfoList = [
+                  "",             // i =  0
+                  location_name,  // i =  1
+                  station_name,   // i =  2
+                  wind_info,      // i =  3
+                  wind_gust,      // i =  4
+                  temperature,    // i =  5
+                  temp_dew_p,     // i =  6
+                  dew_point,      // i =  7
+                  cloudlist_str,  // i =  8
+                  otherlist_str,  // i =  9
+                  altimeter,      // i = 10
+                  remarks,        // i = 11
+                  flight_rules,   // i = 12
+                  runway_vis,     // i = 13
+                  visibility,     // i = 14
+                  OWM_ForecastMinMax, // i = 15
+                  OWM_conditions,     // i = 16
+                  OWM_temperature_K,  // i = 17
+                  OWM_temperature_C,  // i = 18
+                  OWM_temperature_F,  // i = 19
+                  OWM_humidity,       // i = 20
+                  OWM_pressure_hPa,   // i = 21
+                  OWM_pressure_mmHg,  // i = 22
+                  OWM_pressure_inHg,  // i = 23
+                  OWM_wind_info_ms,   // i = 24
+                  OWM_wind_info_km,   // i = 25
+                  OWM_wind_info_mh,   // i = 26
+                  OWM_wind_info_kt    // i = 27
+                ];
+                
+                var max_index = 27;
+                
+                if (configuration.weatherInfo1 < 0) configuration.weatherInfo1 = 0;
+                if (configuration.weatherInfo2 < 0) configuration.weatherInfo2 = 0;
+                if (configuration.weatherInfo3 < 0) configuration.weatherInfo3 = 0;
+                if (configuration.weatherInfo4 < 0) configuration.weatherInfo4 = 0;
+                if (configuration.weatherInfo5 < 0) configuration.weatherInfo5 = 0;
+                if (configuration.weatherInfo6 < 0) configuration.weatherInfo6 = 0;
+                if (configuration.weatherInfo7 < 0) configuration.weatherInfo7 = 0;
+                if (configuration.weatherInfo8_1 < 0) configuration.weatherInfo8_1 = 0;
+                if (configuration.weatherInfo8_2 < 0) configuration.weatherInfo8_2 = 0;
+                if (configuration.weatherInfo8_3 < 0) configuration.weatherInfo8_3 = 0;
+                if (configuration.weatherInfo1 > max_index) configuration.weatherInfo1 = max_index;
+                if (configuration.weatherInfo2 > max_index) configuration.weatherInfo2 = max_index;
+                if (configuration.weatherInfo3 > max_index) configuration.weatherInfo3 = max_index;
+                if (configuration.weatherInfo4 > max_index) configuration.weatherInfo4 = max_index;
+                if (configuration.weatherInfo5 > max_index) configuration.weatherInfo5 = max_index;
+                if (configuration.weatherInfo6 > max_index) configuration.weatherInfo6 = max_index;
+                if (configuration.weatherInfo7 > max_index) configuration.weatherInfo7 = max_index;
+                if (configuration.weatherInfo8_1 > max_index) configuration.weatherInfo8_1 = max_index;
+                if (configuration.weatherInfo8_2 > max_index) configuration.weatherInfo8_2 = max_index;
+                if (configuration.weatherInfo8_3 > max_index) configuration.weatherInfo8_3 = max_index;
+                
+                var WeatherInfoStr_1   = WeatherInfoList[configuration.weatherInfo1];
+                var WeatherInfoStr_2   = WeatherInfoList[configuration.weatherInfo2];
+                var WeatherInfoStr_3   = WeatherInfoList[configuration.weatherInfo3];
+                var WeatherInfoStr_4   = WeatherInfoList[configuration.weatherInfo4];
+                var WeatherInfoStr_5   = WeatherInfoList[configuration.weatherInfo5];
+                var WeatherInfoStr_6   = WeatherInfoList[configuration.weatherInfo6];
+                var WeatherInfoStr_7   = WeatherInfoList[configuration.weatherInfo7];
+                var WeatherInfoStr_8_1 = WeatherInfoList[configuration.weatherInfo8_1];
+                var WeatherInfoStr_8_2 = WeatherInfoList[configuration.weatherInfo8_2];
+                var WeatherInfoStr_8_3 = WeatherInfoList[configuration.weatherInfo8_3];
+                
+                console.log("WeatherInfoStr_1   = " + WeatherInfoStr_1);
+                console.log("WeatherInfoStr_2   = " + WeatherInfoStr_2);
+                console.log("WeatherInfoStr_3   = " + WeatherInfoStr_3);
+                console.log("WeatherInfoStr_4   = " + WeatherInfoStr_4);
+                console.log("WeatherInfoStr_5   = " + WeatherInfoStr_5);
+                console.log("WeatherInfoStr_6   = " + WeatherInfoStr_6);
+                console.log("WeatherInfoStr_7   = " + WeatherInfoStr_7);
+                console.log("WeatherInfoStr_8_1 = " + WeatherInfoStr_8_1);
+                console.log("WeatherInfoStr_8_2 = " + WeatherInfoStr_8_2);
+                console.log("WeatherInfoStr_8_3 = " + WeatherInfoStr_8_3);
+                  
+                    
+                var weather_Line_1 = WeatherInfoStr_1 + " " + WeatherInfoStr_2;
+                var weather_Line_2 = WeatherInfoStr_5;
+                var weather_Line_3 = WeatherInfoStr_6 + "\n" + WeatherInfoStr_7;
+                var weather_Line_4 = WeatherInfoStr_3 + " " + WeatherInfoStr_4;
+                var weather_Line_5 = WeatherInfoStr_8_1 + " " + WeatherInfoStr_8_2 + " " + WeatherInfoStr_8_3;
+                var weather_Line_6 = "";
+                var weather_Line_7 = "";
+                var weather_Line_8 = "";
+                var weather_Line_9 = "";
+                
+                console.log("weather_Line_1 = " + weather_Line_1);
+                console.log("weather_Line_2 = " + weather_Line_2);
+                console.log("weather_Line_3 = " + weather_Line_3);
+                console.log("weather_Line_4 = " + weather_Line_4);
+                console.log("weather_Line_5 = " + weather_Line_5);
+                console.log("weather_Line_6 = " + weather_Line_6);
+                console.log("weather_Line_7 = " + weather_Line_7);
+                console.log("weather_Line_8 = " + weather_Line_8);
+                console.log("weather_Line_9 = " + weather_Line_9);
+                
+                var dictionary = {
+                  "KEY_WEATHER_AVWX_STRING_1":  weather_Line_1,
+                  "KEY_WEATHER_AVWX_STRING_2":  weather_Line_2,
+                  "KEY_WEATHER_AVWX_STRING_3":  weather_Line_3,
+                  "KEY_WEATHER_AVWX_STRING_4":  weather_Line_4,
+                  "KEY_WEATHER_AVWX_STRING_5":  weather_Line_5,
+                  //"KEY_WEATHER_AVWX_STRING_6":  weather_Line_6,
+                  //"KEY_WEATHER_AVWX_STRING_7":  weather_Line_7,
+                  //"KEY_WEATHER_AVWX_STRING_8":  weather_Line_8,
+                  //"KEY_WEATHER_AVWX_STRING_9":  weather_Line_9,
+                  "KEY_WEATHER_DATA_TIME": time_of_last_data,
+                  "KEY_LOCATION_LAT": Math.round(pos.coords.latitude*1000000),
+                  "KEY_LOCATION_LON": Math.round(pos.coords.longitude*1000000),
+                  "KEY_WEATHER_ICON": conditions_icon,
+                  "KEY_TIME_UTC_OFFSET": utc_offset,
+                  "KEY_TIME_ZONE_NAME": getTimeZone(),
+                  "KEY_SUN_RISE": sunrise,
+                  "KEY_SUN_SET": sunset,
+                  "KEY_WEATHER_TEMP": Number(temp_color_celsius),
+                  "KEY_SUN_RISE_UNIX": sunrise_unix,
+                  "KEY_SUN_SET_UNIX": sunset_unix, //both converted to local time zone
+                  "KEY_WARN_LOCATION": warn_location
+                }
+                
+                console.log("dictionary assembled");
+                
               
-              var dictionary = {
-                "KEY_WEATHER_AVWX_STRING_1":  weather_Line_1,
-                "KEY_WEATHER_AVWX_STRING_2":  weather_Line_2,
-                "KEY_WEATHER_AVWX_STRING_3":  weather_Line_3,
-                "KEY_WEATHER_AVWX_STRING_4":  weather_Line_4,
-                "KEY_WEATHER_AVWX_STRING_5":  weather_Line_5,
-                "KEY_WEATHER_AVWX_STRING_6":  weather_Line_6,
-                "KEY_WEATHER_AVWX_STRING_7":  weather_Line_7,
-                "KEY_WEATHER_AVWX_STRING_8":  weather_Line_8,
-                "KEY_WEATHER_AVWX_STRING_9":  weather_Line_9,
-                "KEY_WEATHER_DATA_TIME": time_of_last_data,
-                "KEY_LOCATION_LAT": Math.round(pos.coords.latitude*1000000),
-                "KEY_LOCATION_LON": Math.round(pos.coords.longitude*1000000),
-                "KEY_WEATHER_ICON": conditions_icon,
-                "KEY_TIME_UTC_OFFSET": utc_offset,
-                "KEY_TIME_ZONE_NAME": getTimeZone(),
-                "KEY_SUN_RISE": sunrise,
-                "KEY_SUN_SET": sunset,
-                "KEY_WEATHER_TEMP": Number(temp_color_celsius),
-                "KEY_SUN_RISE_UNIX": sunrise_unix,
-                "KEY_SUN_SET_UNIX": sunset_unix //both converted to local time zone
-              }
+                /*
+                if (CLOUDPEBBLE) {
+                  weather_string_1 = (weather_string_1.replace('°', '__')).replace('°', '__');
+                  weather_string_2 = (weather_string_2.replace('°', '__')).replace('°', '__');
+                }
+                
+                // Assemble dictionary using our keys
+                var dictionary = {
+                  "KEY_LOCATION_NAME": location_name,
+                  "KEY_LOCATION_LAT": Math.round(pos.coords.latitude*1000000),
+                  "KEY_LOCATION_LON": Math.round(pos.coords.longitude*1000000),
+                  "KEY_WEATHER_TEMP": temperature,
+                  "KEY_WEATHER_STRING_1": weather_string_1,
+                  "KEY_WEATHER_STRING_2": weather_string_2,
+                  "KEY_WEATHER_ICON": conditions_icon,
+                  "KEY_TIME_UTC_OFFSET": utc_offset,
+                  "KEY_TIME_ZONE_NAME": getTimeZone(),
+                  "KEY_SUN_RISE": sunrise,
+                  "KEY_SUN_SET": sunset
+                };
+                */
               
-              console.log("dictionary assembled");
-              
-            
-              /*
-              if (CLOUDPEBBLE) {
-                weather_string_1 = (weather_string_1.replace('°', '__')).replace('°', '__');
-                weather_string_2 = (weather_string_2.replace('°', '__')).replace('°', '__');
-              }
-              
-              // Assemble dictionary using our keys
-              var dictionary = {
-                "KEY_LOCATION_NAME": location_name,
-                "KEY_LOCATION_LAT": Math.round(pos.coords.latitude*1000000),
-                "KEY_LOCATION_LON": Math.round(pos.coords.longitude*1000000),
-                "KEY_WEATHER_TEMP": temperature,
-                "KEY_WEATHER_STRING_1": weather_string_1,
-                "KEY_WEATHER_STRING_2": weather_string_2,
-                "KEY_WEATHER_ICON": conditions_icon,
-                "KEY_TIME_UTC_OFFSET": utc_offset,
-                "KEY_TIME_ZONE_NAME": getTimeZone(),
-                "KEY_SUN_RISE": sunrise,
-                "KEY_SUN_SET": sunset
-              };
-              */
-            
-              // Send to Pebble
-              console.log("Sending Weather Info to Pebble ...");
-              
-              Pebble.sendAppMessage(dictionary,
-                                    function(e) {
-                                      console.log("Weather info sent to Pebble successfully!");
-                                    },
-                                    function(e) {
-                                      console.log("Error sending weather info to Pebble!");
-                                    }
-                                   );
+                // Send to Pebble
+                console.log("Sending Weather Info to Pebble ...");
+                
+                Pebble.sendAppMessage(dictionary,
+                                      function(e) {
+                                        console.log("Weather info sent to Pebble successfully!");
+                                      },
+                                      function(e) {
+                                        console.log("Error sending weather info to Pebble!");
+                                      }
+                                     );
+              } //end: if (!DataJSON_AVWX_error)
               var date = new Date();
               console.log("Time is " + date);
               
@@ -802,7 +833,7 @@ Pebble.addEventListener("showConfiguration",
   function(e) {
     //Load the remote config page
     
-    /* --> */ Pebble.openURL("https://googledrive.com/host/0B3ivuMdwFLKzfnRGRFRHaXdJbGVRd0FsUElteEVybVZhSHBjM3YzQWRwa0loYUVqaG1JaWM/pebble_m7s_metar_config_v1_5.html");
+    /* --> */ Pebble.openURL("https://googledrive.com/host/0B3ivuMdwFLKzfnRGRFRHaXdJbGVRd0FsUElteEVybVZhSHBjM3YzQWRwa0loYUVqaG1JaWM/pebble_m7s_metar_config_v1_9.html");
     
     //TODO: send some usefull values to the settings page (e. g. location, battery staistics etc.) by adding ?xxx to the URL
   }
@@ -825,8 +856,7 @@ Pebble.addEventListener("webviewclosed",
       console.log("InvertColors    = " + InvertColors);
       var LightOn = configuration.light;
       console.log("LightOn         = " + LightOn);
-      var DisplaySeconds = 0;
-      if (configuration.display_sec == "1") DisplaySeconds = 1;
+      var DisplaySeconds = configuration.display_sec;
       console.log("DisplaySeconds  = " + DisplaySeconds);
       
       var date_format_str = configuration.date_format; //"%a, %m.%d.%y";

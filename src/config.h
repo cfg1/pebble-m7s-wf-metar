@@ -30,3 +30,4 @@
   
 // uncomment this to show all colors of the temperature
 //#define ITERATE_TEMP
+//#define USE_BATTERY_WARNING_ON_APLITE //uses too much memory on Aplite and M7S_WF_METAR_1_9 version
