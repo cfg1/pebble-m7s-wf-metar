@@ -57,7 +57,7 @@
         "configurable"
     ],
     "companyName": "fg",
-    "longName": "M7S_WF_METAR_1_9",
+    "longName": "M7S_WF_METAR_2_0",
     "projectType": "native",
     "resources": {
         "media": [
@@ -84,13 +84,13 @@
         ]
     },
     "sdkVersion": "3",
-    "shortName": "M7S_WF_METAR_1_9",
+    "shortName": "M7S_WF_METAR_2_0",
     "targetPlatforms": [
         "aplite",
         "basalt"
     ],
     "uuid": "b521f216-a38c-4914-8b15-11135ab81270",
-    "versionLabel": "1.9",
+    "versionLabel": "2.0",
     "watchapp": {
         "watchface": true
     }
