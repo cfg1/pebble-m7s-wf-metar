@@ -2782,7 +2782,8 @@ static void main_window_load(Window *window) {
   //APP_LOG(APP_LOG_LEVEL_INFO, "app_message_outbox_size_maximum() = %d", (int)app_message_outbox_size_maximum());
   #ifdef PBL_SDK_2
     //app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
-    app_message_open(10, 10); //in version 12.0, (200, 10) would be ok too. 500 just for security. Maybe 150 would also be OK. But not less!
+    // the METAR version needs min. 234 bytes, but maybe more. Maximum value in v2.0 and v2.1 is 298 because of RAM.
+    app_message_open(298, 10); //in version 12.0, (200, 10) would be ok too. 
   #else
     app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
   #endif
