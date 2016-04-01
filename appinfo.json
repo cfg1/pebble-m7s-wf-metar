@@ -57,15 +57,11 @@
         "configurable"
     ],
     "companyName": "fg",
-    "longName": "M7S_WF_METAR_2_1",
+    "enableMultiJS": false,
+    "longName": "M7S_WF_METAR_2_2",
     "projectType": "native",
     "resources": {
         "media": [
-            {
-                "file": "images/background_image.png",
-                "name": "IMAGE_BACKGROUND",
-                "type": "png"
-            },
             {
                 "file": "fonts/Climacons.ttf",
                 "name": "FONT_CLIMACONS_32",
@@ -84,13 +80,14 @@
         ]
     },
     "sdkVersion": "3",
-    "shortName": "M7S_WF_METAR_2_1",
+    "shortName": "M7S_WF_METAR_2_2",
     "targetPlatforms": [
         "aplite",
-        "basalt"
+        "basalt",
+        "chalk"
     ],
     "uuid": "b521f216-a38c-4914-8b15-11135ab81270",
-    "versionLabel": "2.1",
+    "versionLabel": "2.2",
     "watchapp": {
         "watchface": true
     }

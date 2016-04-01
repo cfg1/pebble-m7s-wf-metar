@@ -813,7 +813,7 @@ function getWeather() {
   console.log("getWeather Begin");
   var options = {
     enableHighAccuracy: false,
-    timeout: 5000,
+    timeout: 2000,
     maximumAge: 0
   };
   navigator.geolocation.getCurrentPosition(    //could also use navigator.geolocation.watchPosition() ?
