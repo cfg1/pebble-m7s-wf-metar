@@ -339,9 +339,11 @@ function SendToPebble(pos, use_default) {
                   //console.log("Conditions are " + conditions);
                   
                   // Location:
+                  var warn_location = 0;
                   var location_name = DataJSON_OWM.name;
                   if (use_default){
-                    location_name = "*" + location_name + "*";
+                    //location_name = "*" + location_name + "*";
+                    warn_location = 1;
                   }
                   
                   conditions_icon = OWMclimacon[DataJSON_OWM.weather[0].id].charCodeAt(0);
@@ -379,7 +381,8 @@ function SendToPebble(pos, use_default) {
                 // Station:
                 var station_name = DataJSON_AVWX.Station;
                 if (use_default){
-                  station_name = "*" + station_name + "*";
+                  //station_name = "*" + station_name + "*"; //TODO ? -->warn_location?
+                  warn_location = 1;
                 }
                 console.log("location_name = " + location_name);
                 console.log("station_name  = " + station_name);
@@ -481,7 +484,7 @@ function SendToPebble(pos, use_default) {
                 
                 
                 
-                var warn_location = 0;
+                
                 if (!DataJSON_OWM_error){
                   // Conditions
                   var OWM_conditions = DataJSON_OWM.weather[0].description;
@@ -643,6 +646,7 @@ function SendToPebble(pos, use_default) {
                   //"KEY_WEATHER_AVWX_STRING_7":  weather_Line_7,
                   //"KEY_WEATHER_AVWX_STRING_8":  weather_Line_8,
                   //"KEY_WEATHER_AVWX_STRING_9":  weather_Line_9,
+                  "KEY_LOCATION_NAME": location_name, //to set the time of last update
                   "KEY_WEATHER_DATA_TIME": time_of_last_data,
                   "KEY_LOCATION_LAT": Math.round(pos.coords.latitude*1000000),
                   "KEY_LOCATION_LON": Math.round(pos.coords.longitude*1000000),

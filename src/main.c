@@ -12,15 +12,19 @@ static Layer *s_image_layer_hour_1;
 static Layer *s_image_layer_hour_2;
 static Layer *s_image_layer_minute_1;
 static Layer *s_image_layer_minute_2;
+#ifndef PBL_PLATFORM_APLITE
 static Layer *s_image_layer_second_1;
 static Layer *s_image_layer_second_2;
+#endif
 
 static int digit_h_1 = 0;
 static int digit_h_2 = 0;
 static int digit_m_1 = 0;
 static int digit_m_2 = 0;
+#ifndef PBL_PLATFORM_APLITE
 static int digit_s_1 = 0;
 static int digit_s_2 = 0;
+#endif
 
 static Layer *background_paint_layer;
 
@@ -138,8 +142,10 @@ GColor background_color_status;
 
 static int ColorProfile = INVERT_COLORS; //used as color profile
 static int LightOn = LIGHT_ON;
+#ifndef PBL_PLATFORM_APLITE
 static int DisplaySeconds = DISPLAY_SECONDS;
 static int DisplaySecondsTimeout = 5; //in seconds
+#endif
 static int vibe_on_disconnect = VIBE_ON_DISC;
 static int vibe_on_charged_full = VIBE_ON_FULL;
 static int vibe_on_hour         = VIBE_ON_HOUR;
@@ -171,7 +177,9 @@ static int SecondsTimeoutCounter = 0;
 static int warning_color_last_update = 0;
 static int warning_color_location = 0;
 
- 
+static struct tm *tick_time; // must be global so that its content will not be overidden from other stuff.
+   
+
  
 static void set_cwLayer_size(void);
 static void apply_color_profile(void);
@@ -333,8 +341,10 @@ void LoadData(void) {
   key = KEY_SET_LIGHT_ON;
   if (persist_exists(key)) LightOn = persist_read_int(key);
   
+  #ifndef PBL_PLATFORM_APLITE
   key = KEY_SET_DISPLAY_SEC;
   if (persist_exists(key)) DisplaySeconds = persist_read_int(key);
+  #endif
   
   key = KEY_SET_VIBE_DISC;
   if (persist_exists(key)) vibe_on_disconnect = persist_read_int(key);
@@ -431,7 +441,9 @@ void SaveData(void) {
   persist_write_int    (KEY_SUN_SET_UNIX,  (int)sun_set_unix_loc);
   
   persist_write_int(KEY_SET_INVERT_COLOR, ColorProfile);
+  #ifndef PBL_PLATFORM_APLITE
   persist_write_int(KEY_SET_DISPLAY_SEC, DisplaySeconds);
+  #endif
   persist_write_int(KEY_SET_LIGHT_ON, LightOn);
   persist_write_int(KEY_SET_VIBE_DISC, vibe_on_disconnect);
   persist_write_int(KEY_SET_VIBE_FULL, vibe_on_charged_full);
@@ -623,6 +635,13 @@ void DisplayData(void) {
     text_layer_set_text_color(weather_layer_1_temp, textcolor_weather);
   }
   #endif
+  
+  //reset the localtime internal variables to the current time, so that the tick_handler is getting the right ones.
+  //The handle_second_tick() might be executed after running localtime!
+  time_t now = time(NULL);
+  tick_time = localtime(&now);
+  
+  DisplayLastUpdated();
 }
 
 
@@ -877,7 +896,7 @@ static void handle_second_tick(struct tm* current_time, TimeUnits units_changed)
       digit_m_2 = current_time_copy.tm_min%10;
     #endif
   }
-  
+  #ifndef PBL_PLATFORM_APLITE
   #ifdef GET_TIME_FROM_STRING
     digit_s_1 = ((int)time_String[6]-48);
     digit_s_2 = ((int)time_String[7]-48);
@@ -885,7 +904,7 @@ static void handle_second_tick(struct tm* current_time, TimeUnits units_changed)
     digit_s_1 = current_time_copy.tm_sec/10;
     digit_s_2 = current_time_copy.tm_sec%10;
   #endif
-  
+  #endif
   
   static int digit_s_1_old = 10;
   //static int digit_s_2_old = 0;
@@ -911,6 +930,7 @@ static void handle_second_tick(struct tm* current_time, TimeUnits units_changed)
     layer_mark_dirty(s_image_layer_minute_1);
     layer_mark_dirty(s_image_layer_minute_2);
   }
+  #ifndef PBL_PLATFORM_APLITE
   if (DisplaySeconds){
     if (digit_s_1_old != digit_s_1){ //should save energy
       layer_mark_dirty(s_image_layer_second_1);
@@ -918,6 +938,7 @@ static void handle_second_tick(struct tm* current_time, TimeUnits units_changed)
     }
     layer_mark_dirty(s_image_layer_second_2);
   }
+  #endif
   
   
   
@@ -1074,11 +1095,7 @@ static void handle_second_tick(struct tm* current_time, TimeUnits units_changed)
       time_t UTC_TIME_UNIX = time(NULL);
       struct tm* utc_time;
       utc_time = gmtime(&UTC_TIME_UNIX);
-      if(clock_is_24h_style() == true) {
-        strftime(buffer_9, sizeof(buffer_9), "%R UTC", utc_time);
-      } else {
-        strftime(buffer_9, sizeof(buffer_9), "%I:%M UTC", utc_time);
-      }
+      strftime(buffer_9, sizeof(buffer_9), "%R Z", utc_time);
     } else if (TimeZoneFormat == 1){
       snprintf(buffer_9, sizeof(buffer_9), "%s", time_ZONE_NAME);
     } else if (TimeZoneFormat == 2){
@@ -1121,6 +1138,7 @@ static void handle_second_tick(struct tm* current_time, TimeUnits units_changed)
     DisplayLastUpdated(); 
   }
   
+  #ifndef PBL_PLATFORM_APLITE
   if (DisplaySeconds >= 2){
     if (SecOnShakingOn){
       SecondsTimeoutCounter++;
@@ -1142,6 +1160,12 @@ static void handle_second_tick(struct tm* current_time, TimeUnits units_changed)
       }
     }
   }
+  #endif
+  
+  //reset the localtime internal variables to the current time, so that the tick_handler is getting the right ones.
+  //The handle_second_tick() might be executed after running localtime!
+  time_t now = time(NULL);
+  tick_time = localtime(&now);
   
 } // ---- end handle_second_tick() ----
 
@@ -1468,6 +1492,7 @@ static void layer_update_callback_minute_2(Layer *layer, GContext* ctx) {
   }
 }
 
+#ifndef PBL_PLATFORM_APLITE
 static void layer_update_callback_second_1(Layer *layer, GContext* ctx) {
   graphics_context_set_fill_color(ctx, background_color_clock);
   graphics_fill_rect(ctx, GRect(0, 0, 10, 15), 0, GCornerNone);
@@ -1550,6 +1575,7 @@ static void layer_update_callback_second_2(Layer *layer, GContext* ctx) {
     break;
   }
 }
+#endif
 
 static void layer_update_callback_background(Layer *layer, GContext* ctx){
   //clear all with background_color_clock:
@@ -2163,6 +2189,7 @@ static void apply_color_profile(void){
 }
   
 static void set_Date_Layer_size(void){
+  #ifndef PBL_PLATFORM_APLITE
   if (DisplaySeconds){
     if (TimeZoneFormat == 2){
       layer_set_frame(text_layer_get_layer(Date_Layer), GRect(72-8+X_OFFSET, 132+Y_OFFSET, 64+8, 20));
@@ -2176,6 +2203,7 @@ static void set_Date_Layer_size(void){
       text_layer_set_text_alignment(Date_Layer, GTextAlignmentLeft);
     }
   } else {
+  #endif
     if (TimeZoneFormat == 2){
       layer_set_frame(text_layer_get_layer(Date_Layer), GRect(72-10+X_OFFSET, 132+Y_OFFSET, 64+10, 20));
       text_layer_set_text_alignment(Date_Layer, GTextAlignmentRight);
@@ -2183,7 +2211,9 @@ static void set_Date_Layer_size(void){
       layer_set_frame(text_layer_get_layer(Date_Layer), GRect(40+X_OFFSET, 132+Y_OFFSET, 64+32, 20));
       text_layer_set_text_alignment(Date_Layer, GTextAlignmentRight);
     }
+  #ifndef PBL_PLATFORM_APLITE
   }
+  #endif
 }
 
 
@@ -2196,7 +2226,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   
   int restart = 0;
   time_t now = time(NULL);
-  struct tm *tick_time = localtime(&now);
+  tick_time = localtime(&now);
   
   bool Settings_received = false; //determines whether to run handle_second_tick() afterwards.
   bool Settings_change_date_label = false; 
@@ -2294,7 +2324,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       */
     case KEY_TIME_ZONE_NAME:
       snprintf(time_ZONE_NAME, sizeof(time_ZONE_NAME), "%s", t->value->cstring);
-      Settings_received = true;
+      //Settings_received = true;
       break;
     case KEY_SET_MOON_PHASE:
       MoonPhase = (int)t->value->int32;
@@ -2318,6 +2348,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     case KEY_SET_LIGHT_ON:
       LightOn = (int)t->value->int32;
       break;
+    #ifndef PBL_PLATFORM_APLITE
     case KEY_SET_DISPLAY_SEC:
       DisplaySeconds = (int)t->value->int32;
       Settings_change_date_label = true;
@@ -2333,7 +2364,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       else
         tick_timer_service_subscribe(MINUTE_UNIT, &handle_second_tick);
       break;
-      
+    #endif
     case KEY_SET_VIBE_DISC:
       vibe_on_disconnect = (int)t->value->int32;
       break;
@@ -2426,16 +2457,18 @@ static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
   //APP_LOG(APP_LOG_LEVEL_INFO, "Outbox send success!");
 }
 
+#ifndef PBL_PLATFORM_APLITE
 static void tap_handler(AccelAxisType axis, int32_t direction) {
   if (DisplaySeconds < 2) return;
   SecOnShakingOn = 1;
   SecondsTimeoutCounter = 0;
   tick_timer_service_unsubscribe();
   time_t now = time(NULL);
-  struct tm *tick_time = localtime(&now);
+  tick_time = localtime(&now);
   handle_second_tick(tick_time, SECOND_UNIT | MINUTE_UNIT | HOUR_UNIT);
   tick_timer_service_subscribe(SECOND_UNIT, &handle_second_tick);
 }
+#endif
 
 
 
@@ -2482,12 +2515,14 @@ static void main_window_load(Window *window) {
   layer_set_update_proc(s_image_layer_minute_2, layer_update_callback_minute_2);
   layer_add_child(main_window_layer, s_image_layer_minute_2);
   
+  #ifndef PBL_PLATFORM_APLITE
   s_image_layer_second_1 = layer_create(GRect(113+X_OFFSET, 137+Y_OFFSET, 10, 15));
   layer_set_update_proc(s_image_layer_second_1, layer_update_callback_second_1);
   layer_add_child(main_window_layer, s_image_layer_second_1);
   s_image_layer_second_2 = layer_create(GRect(126+X_OFFSET, 137+Y_OFFSET, 10, 15));
   layer_set_update_proc(s_image_layer_second_2, layer_update_callback_second_2);
   layer_add_child(main_window_layer, s_image_layer_second_2);
+  #endif
   
   // --- Create Text-Layers:
   GColor textcolor = GColorWhite;
@@ -2630,12 +2665,13 @@ static void main_window_load(Window *window) {
   
   // Avoids a blank screen on watch start.
   time_t now = time(NULL);
-  struct tm *tick_time = localtime(&now);
+  tick_time = localtime(&now);
   handle_second_tick(tick_time, SECOND_UNIT | MINUTE_UNIT | HOUR_UNIT);
   handle_battery(battery_state_service_peek());
   handle_bluetooth(bluetooth_connection_service_peek());
   
   // --- Register Event Handlers ---
+  #ifndef PBL_PLATFORM_APLITE
   if (DisplaySeconds >= 2){
     SecOnShakingOn = 1;
     SecondsTimeoutCounter = 0;
@@ -2643,10 +2679,13 @@ static void main_window_load(Window *window) {
   if (DisplaySeconds)
     tick_timer_service_subscribe(SECOND_UNIT, &handle_second_tick);
   else
+  #endif
     tick_timer_service_subscribe(MINUTE_UNIT, &handle_second_tick);
   battery_state_service_subscribe(&handle_battery);
   bluetooth_connection_service_subscribe(&handle_bluetooth);
+  #ifndef PBL_PLATFORM_APLITE
   accel_tap_service_subscribe(tap_handler);
+  #endif
   
   // Register callbacks
   app_message_register_inbox_received(inbox_received_callback);
@@ -2657,10 +2696,10 @@ static void main_window_load(Window *window) {
   // Open AppMessage
   //APP_LOG(APP_LOG_LEVEL_INFO, "app_message_inbox_size_maximum()  = %d", (int)app_message_inbox_size_maximum());
   //APP_LOG(APP_LOG_LEVEL_INFO, "app_message_outbox_size_maximum() = %d", (int)app_message_outbox_size_maximum());
-  #ifdef PBL_SDK_2
+  #ifdef PBL_PLATFORM_APLITE
     //app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
     // the METAR version needs min. 234 bytes, but maybe more. Maximum value in v2.0 and v2.1 is 298 because of RAM.
-    app_message_open(298, 10); //in version 12.0, (200, 10) would be ok too. 
+    app_message_open(500, 10); //in version 12.0, (200, 10) would be ok too. //298
   #else
     app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
   #endif
@@ -2690,8 +2729,10 @@ static void main_window_unload(Window *window) {
   layer_destroy(s_image_layer_hour_2);
   layer_destroy(s_image_layer_minute_1);
   layer_destroy(s_image_layer_minute_2);
+  #ifndef PBL_PLATFORM_APLITE
   layer_destroy(s_image_layer_second_1);
   layer_destroy(s_image_layer_second_2);
+  #endif
   
   
   #ifdef PBL_PLATFORM_APLITE
