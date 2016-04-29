@@ -743,6 +743,7 @@ function timeConverter(UNIX_timestamp){
   return time;
 }
 
+/* //old function, is only here to not loose the code if the new version has bugs:
 function convertAVWXTimeToUnix(t){
   var result = 0;
   
@@ -776,6 +777,68 @@ function convertAVWXTimeToUnix(t){
       year = year1;
       month = month1;
       date = date1;
+    }
+  }
+  
+  console.log("Converting Time: " + year + "-" + month + "-" + date + " " + input_hour + ":" + input_min);
+  var utc_offset = new Date().getTimezoneOffset() * 60; //input_hour is in UTC already, and new Date() converts it to UTC internally, so we must give it a local time 
+  console.log("convert_time: utc_offset = " + utc_offset); //utc_offset is -7200 sec in UTC+2 time zone
+  var result = Math.round(Number(new Date(year,month-1,date,input_hour,input_min))/1000) - utc_offset; //in unix timestamp (seconds) and in UTC! 
+  
+  console.log("result = " + result);
+  
+  return result;
+}
+*/
+
+//this version is a fix to display weather info also if it is from last day.
+function convertAVWXTimeToUnix(t){
+  var result = 0;
+  
+  console.log(" --- convertAVWXTimeToUnix: ---");
+  var input_date = t[0] + t[1];
+  var input_hour = t[2] + t[3];
+  var input_min  = t[4] + t[5];
+  console.log("input_date = " + input_date);
+  console.log("input_hour = " + input_hour);
+  console.log("input_min  = " + input_min);
+  
+  var now = new Date();
+  var year = now.getFullYear();
+  var month = pad(now.getMonth()+1);
+  var date = pad(now.getDate());
+  var hour = pad(now.getHours());
+  var min = pad(now.getMinutes());
+  var sec = pad(now.getSeconds());
+  
+  var now_yesterday = new Date(Date.now() - 24*3600*1000); // now - one day
+  var year1 = now_yesterday.getFullYear();
+  var month1 = pad(now_yesterday.getMonth()+1);
+  var date1 = pad(now_yesterday.getDate());
+
+  var now_tomorrow = new Date(Date.now() + 24*3600*1000); // now + one day
+  var year2 = now_tomorrow.getFullYear();
+  var month2 = pad(now_tomorrow.getMonth()+1);
+  var date2 = pad(now_tomorrow.getDate());
+
+  if (date != input_date){
+    console.log("Data is not from today");
+
+    if (input_date == date1) {
+      // day of month is yesterday
+      year = year1;
+      month = month1;
+      date = date1;
+    }
+    else if (input_date == date2) {
+      // tomorrow - if UTC time is ahead of current timezone
+      year = year2;
+      month = month2;
+      date = date2;
+    }
+    else {
+      console.log("Data is also not from yesterday. Return 0.");
+      return 0; // data is too old or incorrect
     }
   }
   

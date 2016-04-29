@@ -58,7 +58,7 @@
     ],
     "companyName": "fg",
     "enableMultiJS": false,
-    "longName": "M7S_WF_METAR_2_3",
+    "longName": "M7S_WF_METAR_2_4",
     "projectType": "native",
     "resources": {
         "media": [
@@ -80,14 +80,14 @@
         ]
     },
     "sdkVersion": "3",
-    "shortName": "M7S_WF_METAR_2_3",
+    "shortName": "M7S_WF_METAR_2_4",
     "targetPlatforms": [
         "aplite",
         "basalt",
         "chalk"
     ],
     "uuid": "b521f216-a38c-4914-8b15-11135ab81270",
-    "versionLabel": "2.3",
+    "versionLabel": "2.4",
     "watchapp": {
         "watchface": true
     }
