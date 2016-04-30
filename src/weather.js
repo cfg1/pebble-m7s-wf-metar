@@ -763,20 +763,34 @@ function convertAVWXTimeToUnix(t){
   var min = pad(now.getMinutes());
   var sec = pad(now.getSeconds());
   
-  var now_yesterday = new Date(Date.now() + - 24*3600*1000); // now - one day
+  var now_yesterday = new Date(Date.now() - 24*3600*1000); // now - one day
   var year1 = now_yesterday.getFullYear();
   var month1 = pad(now_yesterday.getMonth()+1);
   var date1 = pad(now_yesterday.getDate());
-  
+
+  var now_tomorrow = new Date(Date.now() + 24*3600*1000); // now + one day
+  var year2 = now_tomorrow.getFullYear();
+  var month2 = pad(now_tomorrow.getMonth()+1);
+  var date2 = pad(now_tomorrow.getDate());
+
   if (date != input_date){
     console.log("Data is not from today");
-    if (date1 != input_date){
-      console.log("Data is also not from yesterday. Return 0.");
-      return 0; // data is too old
-    } else {
+
+    if (input_date == date1) {
+      // day of month is yesterday
       year = year1;
       month = month1;
       date = date1;
+    }
+    else if (input_date == date2) {
+      // tomorrow - if UTC time is ahead of current timezone
+      year = year2;
+      month = month2;
+      date = date2;
+    }
+    else {
+      console.log("Data is also not from yesterday. Return 0.");
+      return 0; // data is too old or incorrect
     }
   }
   
