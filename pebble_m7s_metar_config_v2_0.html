@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Multif. 7 Segment Configuration</title>
+	<style>
+	  button {
+        color: #DF7401;
+        font-weight: bold;
+        font-size: 200%;
+        text-transform: uppercase;
+      }
+      hr { 
+	    width: 95%; 
+	    height: 5px; 
+        margin: 0 auto;
+	    color: blue;
+	    background: #dfac20;
+      }
+	</style>
+  </head>
+  <body>
+    <h1>Multifunctional 7 Segment<br>METAR/AVWX<br>Configuration</h1>
+    <p>Choose watchface settings</p>
+    
+    <hr>
+    <p>
+    <button type="button" style="height: 40px; width: 300;" id="save_button">Save</button>
+	<button type="button" style="height: 40px; width: 200;" id="cancel_button">Cancel</button>
+	<button type="button" style="height: 40px; width: 200;" id="defaults_button">Reset defaults</button>
+    </p>
+    <hr>
+    
+    
+    <p> OWM API KEY: <font color=”#FF0000”>[5]</font>: 
+    <br>(You can register on www.openweathermap.org, <br>otherwise a default key will be used. There is no benefit <br>using your own key at the moment.)<br>
+    <input id="api_key_edit" type="text" name="api_key" value="">
+    <!-- <br>Your own API key will not be used in v12.6. At the moment, default one will be used always. Maybe the limitations can be removed for my default key. Lets see.<br>
+    </p>-->
+    
+    
+    <p> Default Location (for OWM): <br>
+    <input id="default_loc_edit" type="text" name="default_loc" value="Berlin">
+    </p>
+    <p> Default Station (for AVWX): <br>
+    <input id="default_stn_edit" type="text" name="default_stn" value="EDDB">
+    </p>
+    <p> Autodetect Location: <br>
+    <select id="autodetect_loc_select" size="2">
+      <option value="0">Off</option>
+      <option selected value="1">On</option>
+    </select>
+    </p>
+    <p> OWM Language String (e. g.: en (default), de, fr, uk, ru, ...) <br>
+    <input id="owm_lang_edit" type="text" name="owm_lang" value="">
+    </p>
+    
+    <p>Show Update Time <font color=”#FF0000”>[9]</font>:
+    <br>
+    <select id="show_update_time_select" size="3">
+      <option value="0">Time since last update of Phone</option>
+      <option selected value="1">Time since last update of AVWX data of the server</option>
+      <option value="2">Time since last update of OWM data of the server</option>
+    </select>
+    </p>
+    
+    <p> Moon Phase: <font color=”#FF0000”>[7]</font>:
+    <br>
+    <select id="show_moon_select" size="2">
+      <option selected value="0">Show moon between sun set and sun rise</option>
+      <option value="1">Show moon allways</option>
+    </select>
+    </p>
+    
+    <p>
+    <h2>Additional weather info:</h2>
+    <img src="Screenshot_2015-08-11_18.26_annotation_cut.png" alt="(Description of label positions)">
+    <br>Info 1 <font color=”#FF0000”>[1]</font>:<br>
+    <select id="add_weather_info_1_select" size="11">
+      <option value="0">Empty</option>
+      <option value="1">OWM:   Location</option>
+      <option selected value="2">METAR: Station</option>
+      <option value="3">METAR: Wind info</option>
+      <option value="4">METAR: Wind gust</option>
+      <option value="5">METAR: Temperature</option>
+      <option value="6">METAR: Temp. (Dew Point)</option>
+      <option value="7">METAR: Dew Point</option>
+      <option value="8">METAR: Cloud List</option>
+      <option value="9">METAR: Other List</option>
+      <option value="10">METAR: Altimeter</option>
+      <option value="11">METAR: Remarks</option>
+      <option value="12">METAR: Flight rules</option>
+      <option value="13">METAR: Runway visibility</option>
+      <option value="14">METAR: Visibility</option>
+      <option value="15">OWM: Temp. Max./Min. in next 24 hours</option>
+      <option value="16">OWM: Descrition of conditions (w. sel. lang.)</option>
+      <option value="17">OWM: Temperature in K</option>
+      <option value="18">OWM: Temperature in C</option>
+      <option value="19">OWM: Temperature in F</option>
+      <option value="20">OWM: Humidity in %</option>
+      <option value="21">OWM: Pressure in hPa</option>
+      <option value="22">OWM: Pressure in mmHg</option>
+      <option value="23">OWM: Pressure in inHg</option>
+      <option value="24">OWM: Wind Info [speed (gust) deg] in m/s</option>
+      <option value="25">OWM: Wind Info [speed (gust) deg] in km/h</option>
+      <option value="26">OWM: Wind Info [speed (gust) deg] in mph</option>
+      <option value="27">OWM: Wind Info [speed (gust) deg] in kts</option>
+    </select><br>Info 2 <font color=”#FF0000”>[2]</font>:<br>
+    <select id="add_weather_info_2_select" size="11">
+      <option value="0">Empty</option>
+      <option selected value="1">OWM:   Location</option>
+      <option value="2">METAR: Station</option>
+      <option value="3">METAR: Wind info</option>
+      <option value="4">METAR: Wind gust</option>
+      <option value="5">METAR: Temperature</option>
+      <option value="6">METAR: Temp. (Dew Point)</option>
+      <option value="7">METAR: Dew Point</option>
+      <option value="8">METAR: Cloud List</option>
+      <option value="9">METAR: Other List</option>
+      <option value="10">METAR: Altimeter</option>
+      <option value="11">METAR: Remarks</option>
+      <option value="12">METAR: Flight rules</option>
+      <option value="13">METAR: Runway visibility</option>
+      <option value="14">METAR: Visibility</option>
+      <option value="15">OWM: Temp. Max./Min. in next 24 hours</option>
+      <option value="16">OWM: Descrition of conditions (w. sel. lang.)</option>
+      <option value="17">OWM: Temperature in K</option>
+      <option value="18">OWM: Temperature in C</option>
+      <option value="19">OWM: Temperature in F</option>
+      <option value="20">OWM: Humidity in %</option>
+      <option value="21">OWM: Pressure in hPa</option>
+      <option value="22">OWM: Pressure in mmHg</option>
+      <option value="23">OWM: Pressure in inHg</option>
+      <option value="24">OWM: Wind Info [speed (gust) deg] in m/s</option>
+      <option value="25">OWM: Wind Info [speed (gust) deg] in km/h</option>
+      <option value="26">OWM: Wind Info [speed (gust) deg] in mph</option>
+      <option value="27">OWM: Wind Info [speed (gust) deg] in kts</option>
+    </select><br>Info 3 <font color=”#FF0000”>[3]</font>:<br>
+    <select id="add_weather_info_3_select" size="11">
+      <option value="0">Empty</option>
+      <option value="1">OWM:   Location</option>
+      <option value="2">METAR: Station</option>
+      <option selected value="3">METAR: Wind info</option>
+      <option value="4">METAR: Wind gust</option>
+      <option value="5">METAR: Temperature</option>
+      <option value="6">METAR: Temp. (Dew Point)</option>
+      <option value="7">METAR: Dew Point</option>
+      <option value="8">METAR: Cloud List</option>
+      <option value="9">METAR: Other List</option>
+      <option value="10">METAR: Altimeter</option>
+      <option value="11">METAR: Remarks</option>
+      <option value="12">METAR: Flight rules</option>
+      <option value="13">METAR: Runway visibility</option>
+      <option value="14">METAR: Visibility</option>
+      <option value="15">OWM: Temp. Max./Min. in next 24 hours</option>
+      <option value="16">OWM: Descrition of conditions (w. sel. lang.)</option>
+      <option value="17">OWM: Temperature in K</option>
+      <option value="18">OWM: Temperature in C</option>
+      <option value="19">OWM: Temperature in F</option>
+      <option value="20">OWM: Humidity in %</option>
+      <option value="21">OWM: Pressure in hPa</option>
+      <option value="22">OWM: Pressure in mmHg</option>
+      <option value="23">OWM: Pressure in inHg</option>
+      <option value="24">OWM: Wind Info [speed (gust) deg] in m/s</option>
+      <option value="25">OWM: Wind Info [speed (gust) deg] in km/h</option>
+      <option value="26">OWM: Wind Info [speed (gust) deg] in mph</option>
+      <option value="27">OWM: Wind Info [speed (gust) deg] in kts</option>
+    </select><br>Info 4 <font color=”#FF0000”>[4]</font>:<br>
+    <select id="add_weather_info_4_select" size="11">
+      <option value="0">Empty</option>
+      <option value="1">OWM:   Location</option>
+      <option value="2">METAR: Station</option>
+      <option value="3">METAR: Wind info</option>
+      <option selected value="4">METAR: Wind gust</option>
+      <option value="5">METAR: Temperature</option>
+      <option value="6">METAR: Temp. (Dew Point)</option>
+      <option value="7">METAR: Dew Point</option>
+      <option value="8">METAR: Cloud List</option>
+      <option value="9">METAR: Other List</option>
+      <option value="10">METAR: Altimeter</option>
+      <option value="11">METAR: Remarks</option>
+      <option value="12">METAR: Flight rules</option>
+      <option value="13">METAR: Runway visibility</option>
+      <option value="14">METAR: Visibility</option>
+      <option value="15">OWM: Temp. Max./Min. in next 24 hours</option>
+      <option value="16">OWM: Descrition of conditions (w. sel. lang.)</option>
+      <option value="17">OWM: Temperature in K</option>
+      <option value="18">OWM: Temperature in C</option>
+      <option value="19">OWM: Temperature in F</option>
+      <option value="20">OWM: Humidity in %</option>
+      <option value="21">OWM: Pressure in hPa</option>
+      <option value="22">OWM: Pressure in mmHg</option>
+      <option value="23">OWM: Pressure in inHg</option>
+      <option value="24">OWM: Wind Info [speed (gust) deg] in m/s</option>
+      <option value="25">OWM: Wind Info [speed (gust) deg] in km/h</option>
+      <option value="26">OWM: Wind Info [speed (gust) deg] in mph</option>
+      <option value="27">OWM: Wind Info [speed (gust) deg] in kts</option>
+    </select><br>Info 5 <font color=”#FF0000”>[5]</font> (should be temperature):<br>
+    <select id="add_weather_info_5_select" size="11">
+      <option value="0">Empty</option>
+      <option value="1">OWM:   Location</option>
+      <option value="2">METAR: Station</option>
+      <option value="3">METAR: Wind info</option>
+      <option value="4">METAR: Wind gust</option>
+      <option selected value="5">METAR: Temperature</option>
+      <option value="6">METAR: Temp. (Dew Point)</option>
+      <option value="7">METAR: Dew Point</option>
+      <option value="8">METAR: Cloud List</option>
+      <option value="9">METAR: Other List</option>
+      <option value="10">METAR: Altimeter</option>
+      <option value="11">METAR: Remarks</option>
+      <option value="12">METAR: Flight rules</option>
+      <option value="13">METAR: Runway visibility</option>
+      <option value="14">METAR: Visibility</option>
+      <option value="15">OWM: Temp. Max./Min. in next 24 hours</option>
+      <option value="16">OWM: Descrition of conditions (w. sel. lang.)</option>
+      <option value="17">OWM: Temperature in K</option>
+      <option value="18">OWM: Temperature in C</option>
+      <option value="19">OWM: Temperature in F</option>
+      <option value="20">OWM: Humidity in %</option>
+      <option value="21">OWM: Pressure in hPa</option>
+      <option value="22">OWM: Pressure in mmHg</option>
+      <option value="23">OWM: Pressure in inHg</option>
+      <option value="24">OWM: Wind Info [speed (gust) deg] in m/s</option>
+      <option value="25">OWM: Wind Info [speed (gust) deg] in km/h</option>
+      <option value="26">OWM: Wind Info [speed (gust) deg] in mph</option>
+      <option value="27">OWM: Wind Info [speed (gust) deg] in kts</option>
+    </select><br>Info 6 <font color=”#FF0000”>[6]</font>:<br>
+    <select id="add_weather_info_6_select" size="11">
+      <option value="0">Empty</option>
+      <option value="1">OWM:   Location</option>
+      <option value="2">METAR: Station</option>
+      <option value="3">METAR: Wind info</option>
+      <option value="4">METAR: Wind gust</option>
+      <option value="5">METAR: Temperature</option>
+      <option value="6">METAR: Temp. (Dew Point)</option>
+      <option value="7">METAR: Dew Point</option>
+      <option value="8">METAR: Cloud List</option>
+      <option value="9">METAR: Other List</option>
+      <option value="10">METAR: Altimeter</option>
+      <option value="11">METAR: Remarks</option>
+      <option value="12">METAR: Flight rules</option>
+      <option value="13">METAR: Runway visibility</option>
+      <option value="14">METAR: Visibility</option>
+      <option selected value="15">OWM: Temp. Max./Min. in next 24 hours</option>
+      <option value="16">OWM: Descrition of conditions (w. sel. lang.)</option>
+      <option value="17">OWM: Temperature in K</option>
+      <option value="18">OWM: Temperature in C</option>
+      <option value="19">OWM: Temperature in F</option>
+      <option value="20">OWM: Humidity in %</option>
+      <option value="21">OWM: Pressure in hPa</option>
+      <option value="22">OWM: Pressure in mmHg</option>
+      <option value="23">OWM: Pressure in inHg</option>
+      <option value="24">OWM: Wind Info [speed (gust) deg] in m/s</option>
+      <option value="25">OWM: Wind Info [speed (gust) deg] in km/h</option>
+      <option value="26">OWM: Wind Info [speed (gust) deg] in mph</option>
+      <option value="27">OWM: Wind Info [speed (gust) deg] in kts</option>
+    </select><br>Info 7 <font color=”#FF0000”>[7]</font>:<br>
+    <select id="add_weather_info_7_select" size="11">
+      <option value="0">Empty</option>
+      <option value="1">OWM:   Location</option>
+      <option value="2">METAR: Station</option>
+      <option value="3">METAR: Wind info</option>
+      <option value="4">METAR: Wind gust</option>
+      <option value="5">METAR: Temperature</option>
+      <option value="6">METAR: Temp. (Dew Point)</option>
+      <option value="7">METAR: Dew Point</option>
+      <option value="8">METAR: Cloud List</option>
+      <option value="9">METAR: Other List</option>
+      <option selected value="10">METAR: Altimeter</option>
+      <option value="11">METAR: Remarks</option>
+      <option value="12">METAR: Flight rules</option>
+      <option value="13">METAR: Runway visibility</option>
+      <option value="14">METAR: Visibility</option>
+      <option value="15">OWM: Temp. Max./Min. in next 24 hours</option>
+      <option value="16">OWM: Descrition of conditions (w. sel. lang.)</option>
+      <option value="17">OWM: Temperature in K</option>
+      <option value="18">OWM: Temperature in C</option>
+      <option value="19">OWM: Temperature in F</option>
+      <option value="20">OWM: Humidity in %</option>
+      <option value="21">OWM: Pressure in hPa</option>
+      <option value="22">OWM: Pressure in mmHg</option>
+      <option value="23">OWM: Pressure in inHg</option>
+      <option value="24">OWM: Wind Info [speed (gust) deg] in m/s</option>
+      <option value="25">OWM: Wind Info [speed (gust) deg] in km/h</option>
+      <option value="26">OWM: Wind Info [speed (gust) deg] in mph</option>
+      <option value="27">OWM: Wind Info [speed (gust) deg] in kts</option>
+    </select><br>Info 8.1 <font color=”#FF0000”>[8]</font>:<br>
+    <select id="add_weather_info_8_1_select" size="12">
+      <option value="0">Empty</option>
+      <option value="1">OWM:   Location</option>
+      <option value="2">METAR: Station</option>
+      <option value="3">METAR: Wind info</option>
+      <option value="4">METAR: Wind gust</option>
+      <option value="5">METAR: Temperature</option>
+      <option value="6">METAR: Temp. (Dew Point)</option>
+      <option value="7">METAR: Dew Point</option>
+      <option selected value="8">METAR: Cloud List</option>
+      <option value="9">METAR: Other List</option>
+      <option value="10">METAR: Altimeter</option>
+      <option value="11">METAR: Remarks</option>
+      <option value="12">METAR: Flight rules</option>
+      <option value="13">METAR: Runway visibility</option>
+      <option value="14">METAR: Visibility</option>
+      <option value="15">OWM: Temp. Max./Min. in next 24 hours</option>
+      <option value="16">OWM: Descrition of conditions (w. sel. lang.)</option>
+      <option value="17">OWM: Temperature in K</option>
+      <option value="18">OWM: Temperature in C</option>
+      <option value="19">OWM: Temperature in F</option>
+      <option value="20">OWM: Humidity in %</option>
+      <option value="21">OWM: Pressure in hPa</option>
+      <option value="22">OWM: Pressure in mmHg</option>
+      <option value="23">OWM: Pressure in inHg</option>
+      <option value="24">OWM: Wind Info [speed (gust) deg] in m/s</option>
+      <option value="25">OWM: Wind Info [speed (gust) deg] in km/h</option>
+      <option value="26">OWM: Wind Info [speed (gust) deg] in mph</option>
+      <option value="27">OWM: Wind Info [speed (gust) deg] in kts</option>
+    </select>
+    </select><br>Info 8.2 <font color=”#FF0000”>[8]</font>:<br>
+    <select id="add_weather_info_8_2_select" size="12">
+      <option value="0">Empty</option>
+      <option value="1">OWM:   Location</option>
+      <option value="2">METAR: Station</option>
+      <option value="3">METAR: Wind info</option>
+      <option value="4">METAR: Wind gust</option>
+      <option value="5">METAR: Temperature</option>
+      <option value="6">METAR: Temp. (Dew Point)</option>
+      <option value="7">METAR: Dew Point</option>
+      <option value="8">METAR: Cloud List</option>
+      <option selected value="9">METAR: Other List</option>
+      <option value="10">METAR: Altimeter</option>
+      <option value="11">METAR: Remarks</option>
+      <option value="12">METAR: Flight rules</option>
+      <option value="13">METAR: Runway visibility</option>
+      <option value="14">METAR: Visibility</option>
+      <option value="15">OWM: Temp. Max./Min. in next 24 hours</option>
+      <option value="16">OWM: Descrition of conditions (w. sel. lang.)</option>
+      <option value="17">OWM: Temperature in K</option>
+      <option value="18">OWM: Temperature in C</option>
+      <option value="19">OWM: Temperature in F</option>
+      <option value="20">OWM: Humidity in %</option>
+      <option value="21">OWM: Pressure in hPa</option>
+      <option value="22">OWM: Pressure in mmHg</option>
+      <option value="23">OWM: Pressure in inHg</option>
+      <option value="24">OWM: Wind Info [speed (gust) deg] in m/s</option>
+      <option value="25">OWM: Wind Info [speed (gust) deg] in km/h</option>
+      <option value="26">OWM: Wind Info [speed (gust) deg] in mph</option>
+      <option value="27">OWM: Wind Info [speed (gust) deg] in kts</option>
+    </select>
+    </select><br>Info 8.3 <font color=”#FF0000”>[8]</font>:<br>
+    <select id="add_weather_info_8_3_select" size="12">
+      <option value="0">Empty</option>
+      <option value="1">OWM:   Location</option>
+      <option value="2">METAR: Station</option>
+      <option value="3">METAR: Wind info</option>
+      <option value="4">METAR: Wind gust</option>
+      <option value="5">METAR: Temperature</option>
+      <option value="6">METAR: Temp. (Dew Point)</option>
+      <option value="7">METAR: Dew Point</option>
+      <option value="8">METAR: Cloud List</option>
+      <option value="9">METAR: Other List</option>
+      <option value="10">METAR: Altimeter</option>
+      <option selected value="11">METAR: Remarks</option>
+      <option value="12">METAR: Flight rules</option>
+      <option value="13">METAR: Runway visibility</option>
+      <option value="14">METAR: Visibility</option>
+      <option value="15">OWM: Temp. Max./Min. in next 24 hours</option>
+      <option value="16">OWM: Descrition of conditions (w. sel. lang.)</option>
+      <option value="17">OWM: Temperature in K</option>
+      <option value="18">OWM: Temperature in C</option>
+      <option value="19">OWM: Temperature in F</option>
+      <option value="20">OWM: Humidity in %</option>
+      <option value="21">OWM: Pressure in hPa</option>
+      <option value="22">OWM: Pressure in mmHg</option>
+      <option value="23">OWM: Pressure in inHg</option>
+      <option value="24">OWM: Wind Info [speed (gust) deg] in m/s</option>
+      <option value="25">OWM: Wind Info [speed (gust) deg] in km/h</option>
+      <option value="26">OWM: Wind Info [speed (gust) deg] in mph</option>
+      <option value="27">OWM: Wind Info [speed (gust) deg] in kts</option>
+    </select>
+    </p>
+    
+    <p>
+    Weather update interval (min.):
+    <br>
+    <select id="update_interval_select" size="10">
+      <option value="5">5 min.</option>
+      <option value="10">10 min.</option>
+      <option value="15">15 min.</option>
+      <option value="20">20 min.</option>
+      <option value="30">30 min.</option>
+      <option selected value="45">45 min.</option>
+      <option value="60">1 h</option>
+      <option value="120">2 h</option>
+      <option value="180">3 h</option>
+      <option value="720">6 h</option>
+    </select>
+    </p>
+    <!--
+    <br>  min="1" max="720" step="1" 
+    <input id="update_interval_select" type="number" name="update_interval" value="15">
+    </p>-->
+    
+    <hr>
+
+    <p>Select color scheme (need watchface restart):
+    <div style="height:205px; overflow:auto;">
+    <img src="00_14_joined_metar.png" alt="00_14_joined_metar.png">
+    </div>
+    <br>
+    <select id="invert_select" size="15">
+      <option value="0">00: White on Black Background</option>
+      <option value="1">01: Black on White Background</option>
+      <option selected value="2">02: White on Black Background (with some colors)</option>
+      <option value="3">03: Black on White Background (with some colors)</option>
+      <option value="4">04: Red on Black Background</option>
+      <option value="5">05: Green on Black Background</option>
+      <option value="6">06: Blue on Black Background</option>
+      <option value="7">07: Light Red Clock with Red Background</option>
+      <option value="8">08: Light Green Clock with Green Background</option>
+      <option value="9">09: Light Blue Clock with Blue Background</option>
+      <option value="10">10: Light Red</option>
+      <option value="11">11: Light Green</option>
+      <option value="12">12: Light Blue</option>
+      <option value="13">13: High Contrast: Blue on Yellow clock</option>
+      <option value="14">14: Colorful with Blue clock</option>
+    </select>
+    </p>
+    <p>Background Light:
+    <br>
+    <select id="light_select" size="4">
+      <option value="0">Normal</option>
+      <option selected value="1">On if powered and full</option>
+      <option value="2">Allways on</option>
+      <option value="3">Blinking (1 sec)</option>
+    </select>
+    </p>
+    <p>Display seconds:
+    <br>
+    <select id="display_seconds_select" size="3">
+      <option selected value="0">No</option>
+      <option value="1">Yes</option>
+      <option value="2">Only after shaking (5s)</option>
+      <option value="3">Only after shaking (15s)</option>
+      <option value="4">Only after shaking (30s)</option>
+      <option value="5">Only after shaking (60s)</option>
+    </select>
+    </p>
+    
+    <p>Date Format <font color=”#FF0000”>[14]</font>:
+    <br>
+    <select id="date_format_select" size="5">
+      <option selected value="_a, _d._m.">Weekday, DD.MM.</option>
+	  <option value="_a, _d._m._y">Weekday, DD.MM.YY</option>
+	  <option value="_a, _d._m._Y">Weekday, DD.MM.YYYY</option>
+	  <option value="_d._m._Y">DD.MM.YYYY</option>
+      <option value="_a, _d/_m">Weekday, DD/MM</option>
+	  <option value="_a, _d/_m/_y">Weekday, DD/MM/YY</option>
+	  <option value="_a, _d/_m/_Y">Weekday, DD/MM/YYYY</option>
+	  <option value="_d/_m/_Y">DD/MM/YYYY</option>
+      <option value="_a, _m/_d">Weekday, MM/DD</option>
+      <option value="_a, _m/_d/_y">Weekday, MM/DD/YY</option>
+      <option value="_a, _m/_d/_Y">Weekday, MM/DD/YYYY</option>
+      <option value="_m/_d/_Y">MM/DD/YYYY</option>
+	  <option value="_a, _Y-_m-_d">Weekday, YYYY-MM-DD (ISO)</option>
+	  <option value="_Y-_m-_d">YYYY-MM-DD (ISO)</option>
+	  <option value="_a">Weekday</option>
+	  <option value="_d _b">D Month</option>
+	  <option value="_a _d _b">Weekday D Month</option>
+    </select>
+    </p>
+    
+    <!-- 
+    <p>
+    Weather units (Temp./speed/pressure):
+    <br>
+    <select id="temp_unit_select" size="3">
+      <option selected value="0">degree C</option>
+      <option value="1">degree F</option>
+    </select>
+    <select id="speed_unit_select" size="3">
+      <option selected value="0">km/h</option>
+      <option value="1">mph</option>
+      <option value="2">m/s</option>
+    </select>
+    <select id="pressure_unit_select" size="3">
+      <option selected value="0">hPa (= mBar)</option>
+      <option value="1">mmHg</option>
+      <option value="2">inHg</option>
+    </select>
+    </p>
+    -->
+    
+    <p>Time Zone Info <font color=”#FF0000”>[13]</font>:
+    <br>
+    <select id="time_zone_info_select" size="3">
+      <option selected value="0">Show UTC/ZULU Time (e.g. 12:54 Z)</option>
+      <option value="1">Show TZ Name (e.g. CEST)</option>
+      <option value="2">Show AM/PM/24H and TZ Name (e.g. AM, CEST)</option>
+    </select>
+    </p>
+    
+    
+    
+    <p>Vibrate on Disconnect:
+    <br>
+    <select id="vibe_dis_select" size="2">
+      <option value="0">No</option>
+      <option selected value="1">Yes</option>
+    </select>
+    </p>
+    
+    <p>Vibrate on Full Charge:
+    <br>
+    <select id="vibe_full_select" size="2">
+      <option selected value="0">No</option>
+      <option value="1">Yes</option>
+    </select>
+    </p>
+    
+    <p>Vibrate on Hour:
+    <br>
+    <select id="vibe_hour_select" size="2">
+      <option selected value="0">No</option>
+      <option value="1">Yes</option>
+    </select>
+    </p>
+    
+    <hr>
+     <h3>Annotation:</h3>
+     <font color=”#FF0000”>[10]</font>: Weather condiction icon (data from openweathermap). At night, the moon phase is shown (calc. in watchface).<br>
+     <font color=”#FF0000”>[11]</font>: Battery information. The time under the battery indicates the runtime since unplugged, or if plugged the time from pugging in until battery was full.<br>
+     <font color=”#FF0000”>[5]</font>: If actual temperature is selected the color changes for different temperatures.<br>
+     <font color=”#FF0000”>[12]</font>: Sun rise and sun set (data from openweathermap)
+     <br><br>
+    <hr>
+    
+    
+    <h3> Donation: </h3>
+    Development and maintenance of this watchface costs much time and also some money. If you like this watchface, please consider donating a small amount. Please do NOT donate if you expect a new feature to be implemented and to push it. I have very limited time now for changing this watchface. The source code is available at http://github.com/cfg1. Please consider if changes can be made by your own. Maybe you like to have something a little bit differnt?
+    If you still want to donate, here is the PayPal button to do so:
+    <div align="center">
+    <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="RZWG6NSNJPZH6">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1">
+    </form>
+    
+    </div>
+    
+    
+    <!-- <script type="text/javascript" src="jscolor/jscolor.js"></script>
+	Click here: <input class="color" value="66ff00"> 
+	-->
+
+    <!-- 
+    <p>
+    <button type="button" style="height: 40px; width: 300;" id="save_button">Save</button>
+	<button type="button" style="height: 40px; width: 200;" id="cancel_button">Cancel</button>
+	<button type="button" style="height: 40px; width: 200;" id="defaults_button">Reset defaults</button>
+    </p>
+    -->
+    
+
+    <script>
+      
+      var apikeyEdit = document.getElementById("api_key_edit");
+      
+      var defaultlocEdit = document.getElementById("default_loc_edit");
+      var defaultstnEdit = document.getElementById("default_stn_edit");
+      var autodetlocSelect = document.getElementById("autodetect_loc_select");
+      var owmlangEdit = document.getElementById("owm_lang_edit");
+      var updateTimeSelect = document.getElementById("show_update_time_select");
+	  var invertSelect = document.getElementById("invert_select");
+	  var lightSelect = document.getElementById("light_select");
+	  var dsSelect = document.getElementById("display_seconds_select");
+	  var dfSelect = document.getElementById("date_format_select");
+	  var timeZoneSelect = document.getElementById("time_zone_info_select");
+	  var moonSelect = document.getElementById("show_moon_select");
+	  
+	  var vdSelect = document.getElementById("vibe_dis_select");
+	  var vfSelect = document.getElementById("vibe_full_select");
+	  var vhSelect = document.getElementById("vibe_hour_select");
+	  
+	  var weatherInfo1Select = document.getElementById("add_weather_info_1_select");
+	  var weatherInfo2Select = document.getElementById("add_weather_info_2_select");
+	  var weatherInfo3Select = document.getElementById("add_weather_info_3_select");
+	  var weatherInfo4Select = document.getElementById("add_weather_info_4_select");
+	  var weatherInfo5Select = document.getElementById("add_weather_info_5_select");
+	  var weatherInfo6Select = document.getElementById("add_weather_info_6_select");
+	  var weatherInfo7Select = document.getElementById("add_weather_info_7_select");
+	  var weatherInfo81Select = document.getElementById("add_weather_info_8_1_select");
+	  var weatherInfo82Select = document.getElementById("add_weather_info_8_2_select");
+	  var weatherInfo83Select = document.getElementById("add_weather_info_8_3_select");
+	  var updIntSelect = document.getElementById("update_interval_select");
+	  
+	  // Something like this to get query variables.
+      function getQueryParam(variable, default_) {
+        var query = location.search.substring(1);
+        var vars = query.split('&');
+        for (var i = 0; i < vars.length; i++) {
+          var pair = vars[i].split('=');
+          if (pair[0] == variable)
+            return decodeURIComponent(pair[1]);
+        }
+        return default_ || false;
+      }
+	  
+	  
+      //Setup to allow easy adding more options later
+      function saveOptions() {
+        
+        var options = {
+          "invert": invertSelect.selectedIndex,
+          "light": light_select.selectedIndex,
+          "display_sec": dsSelect.selectedIndex,
+          "date_format": dfSelect.options[dfSelect.selectedIndex].value, //not working with %
+		  "date_format_index": dfSelect.selectedIndex, //only used for internal storage in browser
+		  "time_zone_info": timeZoneSelect.selectedIndex,
+          "vibe_disconnect": vdSelect.selectedIndex,
+          "vibe_full": vfSelect.selectedIndex,
+          "vibe_hour": vhSelect.selectedIndex,
+          "default_loc": defaultlocEdit.value,
+          "default_stn": defaultstnEdit.value,
+          "autodetect_loc": autodetlocSelect.selectedIndex,
+          "lang_id": owmlangEdit.value,
+          "show_update_time": updateTimeSelect.selectedIndex,
+          "moon_phase": moonSelect.selectedIndex,
+          "weatherInfo1": weatherInfo1Select.selectedIndex,
+          "weatherInfo2": weatherInfo2Select.selectedIndex,
+          "weatherInfo3": weatherInfo3Select.selectedIndex,
+          "weatherInfo4": weatherInfo4Select.selectedIndex,
+          "weatherInfo5": weatherInfo5Select.selectedIndex,
+          "weatherInfo6": weatherInfo6Select.selectedIndex,
+          "weatherInfo7": weatherInfo7Select.selectedIndex,
+          "weatherInfo8_1": weatherInfo81Select.selectedIndex,
+          "weatherInfo8_2": weatherInfo82Select.selectedIndex,
+          "weatherInfo8_3": weatherInfo83Select.selectedIndex,
+          "weatherUpdateInt": parseInt(updIntSelect.value),
+          "OWM_API_KEY": apikeyEdit.value
+        }
+        
+        return options;
+      };
+      var submitButton = document.getElementById("save_button");
+	  var cancelButton = document.getElementById("cancel_button");
+	  var defaultsButton = document.getElementById("defaults_button");
+      
+      submitButton.addEventListener("click", 
+        function() {
+          console.log("Submit");
+          var options = saveOptions();
+          
+          console.log(JSON.stringify(options));
+		  var return_to = getQueryParam('return_to', 'pebblejs://close#');
+          //var location = "pebblejs://close#" + encodeURIComponent(JSON.stringify(options));
+		  var location = return_to + encodeURIComponent(JSON.stringify(options));
+		
+          //save settings to local storage of the browser:
+		  if (typeof window.localStorage !== "undefined") {
+            window.localStorage.pebble_m7s_metar_options = JSON.stringify(options);
+          }
+          
+		  console.log(location);
+		  
+          document.location = location;
+        }, 
+      false);
+	  
+	  cancelButton.addEventListener("click", 
+        function() {
+          console.log("Cancel");
+          //var options = saveOptions();
+          //console.log(JSON.stringify(options));
+          var location = "pebblejs://close";
+          
+          document.location = location;
+        }, 
+      false);
+	  
+	  defaultsButton.addEventListener("click", 
+        function() {
+          console.log("Reset defaults");
+		  if (typeof window.localStorage !== "undefined") window.localStorage.pebble_m7s_metar_options_reload = 1;
+          document.location = document.location;
+		  console.log("DEBUG: exec. after exit");
+        }, 
+      false);
+	  
+	  
+	  
+	  console.log("params = "+location.search);
+	  
+	  //read settings from local storage of the browser:
+	  //init_options = JSON.parse(decodeURIComponent(location.search.replace('?', '')));
+	  if (typeof window.localStorage !== "undefined") {
+	    if (window.localStorage.pebble_m7s_metar_options_reload != 1) {
+		  if (window.localStorage.pebble_m7s_metar_options) {
+				  
+            var init_options = JSON.parse(window.localStorage.pebble_m7s_metar_options);
+		    console.log('init_options = '+JSON.stringify(init_options));
+		  
+		    if (init_options.invert !== "undefined"){
+  		      invertSelect.selectedIndex = init_options.invert;
+			  console.log('invertSelect set to '+init_options.invert);
+		    }
+		    if (init_options.light !== "undefined"){
+    		  lightSelect.selectedIndex = init_options.light;
+	  		  console.log('lightSelect set to '+init_options.light);
+		    }
+		    if (init_options.display_sec !== "undefined"){
+  		      dsSelect.selectedIndex = init_options.display_sec;
+			  console.log('dsSelect set to '+init_options.display_sec);
+		    }
+		    if (init_options.date_format_index !== "undefined"){
+    		  dfSelect.selectedIndex = init_options.date_format_index;
+	  		  console.log('dfSelect set to '+init_options.date_format_index);
+		    }
+		    if (init_options.time_zone_info !== "undefined"){
+  		      timeZoneSelect.selectedIndex = init_options.time_zone_info;
+			  console.log('timeZoneSelect set to '+init_options.time_zone_info);
+		    }
+		    
+		    if (init_options.vibe_disconnect !== "undefined"){
+  		      vdSelect.selectedIndex = init_options.vibe_disconnect;
+			  console.log('vdSelect set to '+init_options.vibe_disconnect);
+		    }
+		    if (init_options.vibe_full !== "undefined"){
+  		      vfSelect.selectedIndex = init_options.vibe_full;
+			  console.log('vfSelect set to '+init_options.vibe_full);
+		    }
+		    if (init_options.vibe_hour !== "undefined"){
+  		      vhSelect.selectedIndex = init_options.vibe_hour;
+			  console.log('vhSelect set to '+init_options.vibe_hour);
+		    }
+		    
+		    //apikeyEdit.value = "default";
+		    if (typeof init_options.OWM_API_KEY === 'string' || init_options.OWM_API_KEY instanceof String){
+		      // it's a string
+		      if (String(init_options.OWM_API_KEY).length > 10){
+      		    apikeyEdit.value = init_options.OWM_API_KEY;
+    		    console.log('apikeyEdit set to '+init_options.OWM_API_KEY);
+    		  } else {
+    		    apikeyEdit.value = "default";
+    		    console.log('apikeyEdit set to '+init_options.OWM_API_KEY);
+    		  }
+		    } else {
+		      // it's something else
+		      apikeyEdit.value = "default";
+    		  console.log('apikeyEdit set to '+init_options.OWM_API_KEY);
+		    }
+		    //apikeyEdit.value = "TESTSTRING";
+		    
+		    if (init_options.default_loc !== "undefined"){
+  		      defaultlocEdit.value = init_options.default_loc;
+			  console.log('defaultlocEdit set to '+init_options.default_loc);
+		    } else {
+		      defaultlocEdit.value = "Berlin";
+			  console.log('defaultlocEdit set to '+init_options.default_loc);
+		    }
+		    if (init_options.default_stn !== "undefined"){
+  		      defaultstnEdit.value = init_options.default_stn;
+			  console.log('defaultstnEdit set to '+init_options.default_stn);
+		    } else {
+		      defaultstnEdit.value = "EDDB";
+			  console.log('defaultstnEdit set to '+init_options.default_stn);
+		    }
+		    if (init_options.autodetect_loc !== "undefined"){
+  		      autodetlocSelect.selectedIndex = init_options.autodetect_loc;
+			  console.log('autodetlocSelect set to '+init_options.autodetect_loc);
+		    }
+		    if (init_options.lang_id !== "undefined"){
+  		      owmlangEdit.value = init_options.lang_id;
+			  console.log('owmlangEdit set to '+init_options.lang_id);
+		    } else {
+		      owm_lang.value = "en";
+			  console.log('owmlangEdit set to '+init_options.lang_id);
+		    }
+		    
+		    if (init_options.show_update_time !== "undefined"){
+  		      updateTimeSelect.selectedIndex = init_options.show_update_time;
+			  console.log('updateTimeSelect set to '+init_options.show_update_time);
+		    }
+		    if (init_options.moon_phase !== "undefined"){
+  		      moonSelect.selectedIndex = init_options.moon_phase;
+			  console.log('moonSelect set to '+init_options.moon_phase);
+		    }
+		    
+		    if (init_options.weatherInfo1 !== "undefined"){
+  		      weatherInfo1Select.selectedIndex = init_options.weatherInfo1;
+			  console.log('weatherInfo1Select set to '+init_options.weatherInfo1);
+		    }
+		    if (init_options.weatherInfo2 !== "undefined"){
+  		      weatherInfo2Select.selectedIndex = init_options.weatherInfo2;
+			  console.log('weatherInfo2Select set to '+init_options.weatherInfo2);
+		    }
+		    if (init_options.weatherInfo3 !== "undefined"){
+  		      weatherInfo3Select.selectedIndex = init_options.weatherInfo3;
+			  console.log('weatherInfo3Select set to '+init_options.weatherInfo3);
+		    }
+		    if (init_options.weatherInfo4 !== "undefined"){
+  		      weatherInfo4Select.selectedIndex = init_options.weatherInfo4;
+			  console.log('weatherInfo4Select set to '+init_options.weatherInfo4);
+		    }
+		    if (init_options.weatherInfo5 !== "undefined"){
+  		      weatherInfo5Select.selectedIndex = init_options.weatherInfo5;
+			  console.log('weatherInfo5Select set to '+init_options.weatherInfo5);
+		    }
+		    if (init_options.weatherInfo6 !== "undefined"){
+  		      weatherInfo6Select.selectedIndex = init_options.weatherInfo6;
+			  console.log('weatherInfo6Select set to '+init_options.weatherInfo6);
+		    }
+		    if (init_options.weatherInfo7 !== "undefined"){
+  		      weatherInfo7Select.selectedIndex = init_options.weatherInfo7;
+			  console.log('weatherInfo7Select set to '+init_options.weatherInfo7);
+		    }
+		    if (init_options.weatherInfo8_1 !== "undefined"){
+  		      weatherInfo81Select.selectedIndex = init_options.weatherInfo8_1;
+			  console.log('weatherInfo81Select set to '+init_options.weatherInfo8_1);
+		    }
+		    if (init_options.weatherInfo8_2 !== "undefined"){
+  		      weatherInfo82Select.selectedIndex = init_options.weatherInfo8_2;
+			  console.log('weatherInfo82Select set to '+init_options.weatherInfo8_2);
+		    }
+		    if (init_options.weatherInfo8_3 !== "undefined"){
+  		      weatherInfo83Select.selectedIndex = init_options.weatherInfo8_3;
+			  console.log('weatherInfo83Select set to '+init_options.weatherInfo8_3);
+		    }
+		    
+		    console.log((typeof init_options.weatherUpdateInt));
+            if((typeof init_options.weatherUpdateInt) === 'number'){
+              if (parseInt(init_options.weatherUpdateInt) < 1){
+                init_options.weatherUpdateInt = 1;
+                console.log("init_options.weatherUpdateInt = 1;");
+    	      } else if (parseInt(init_options.weatherUpdateInt) >720){
+    	        init_options.weatherUpdateInt = 720;
+    	        console.log("init_options.weatherUpdateInt = 720;");
+    	      }
+    	    } else {
+    	      init_options.weatherUpdateInt = 45;
+    	      console.log("init_options.weatherUpdateInt = 45;");
+    	    }
+    	    updIntSelect.value = init_options.weatherUpdateInt;
+		    console.log('updIntSelect set to '+init_options.weatherUpdateInt);
+		    
+		    
+		  } 
+	    } else {
+		  window.localStorage.pebble_m7s_metar_options_reload = 0;
+		  console.log("using default values.");
+		}
+	  }
+	  
+	  //if (location.search == "?1") invertSelect.value = 1; 
+	  
+    </script>
+  </body>
+</html>
