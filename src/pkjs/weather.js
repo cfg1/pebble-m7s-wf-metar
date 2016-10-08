@@ -253,8 +253,9 @@ function SendToPebble(pos, use_default) {
         pos_lat + "&lon=" + pos_lon + "&lang=" + configuration.lang_id;
     url_OWM_forecast = "http://api.openweathermap.org/data/2.5/forecast?APPID=" + configuration.OWM_API_KEY + "&lat=" +
         pos_lat + "&lon=" + pos_lon + "&lang=" + configuration.lang_id;
-    url_AVWX = "http://avwx.rest/api/metar.php?lat=" +
-        pos_lat + "&lon=" + pos_lon + "&format=JSON";
+    //url_AVWX = "http://avwx.rest/api/metar.php?lat=" +
+    //    pos_lat + "&lon=" + pos_lon + "&format=JSON";
+    url_AVWX = "http://avwx.rest/api/metar/" + pos_lat + "," + pos_lon + "?options=info,translate";
   } else {
     console.log("conf.def_loc = " + configuration.default_loc);
     var city_name_req = configuration.default_loc;
@@ -263,7 +264,8 @@ function SendToPebble(pos, use_default) {
     // Construct URL
     url_OWM = "http://api.openweathermap.org/data/2.5/weather?APPID=" + configuration.OWM_API_KEY + "&q=" + city_name_req + "&lang=" + configuration.lang_id;
     url_OWM_forecast = "http://api.openweathermap.org/data/2.5/forecast?APPID=" + configuration.OWM_API_KEY + "&q=" + city_name_req + "&lang=" + configuration.lang_id;
-    url_AVWX = "http://avwx.rest/api/metar.php?station=" + station_name_req + "&format=JSON";
+    //url_AVWX = "http://avwx.rest/api/metar.php?station=" + station_name_req + "&format=JSON";
+    url_AVWX = "http://avwx.rest/api/metar/" + station_name_req + "?options=info,translate";
   }
   
   //UTC:
@@ -916,7 +918,8 @@ Pebble.addEventListener("showConfiguration",
   function(e) {
     //Load the remote config page
     
-    /* --> */ Pebble.openURL("https://googledrive.com/host/0B3ivuMdwFLKzfnRGRFRHaXdJbGVRd0FsUElteEVybVZhSHBjM3YzQWRwa0loYUVqaG1JaWM/pebble_m7s_metar_config_v2_0.html");
+    //Pebble.openURL("https://googledrive.com/host/0B3ivuMdwFLKzfnRGRFRHaXdJbGVRd0FsUElteEVybVZhSHBjM3YzQWRwa0loYUVqaG1JaWM/pebble_m7s_metar_config_v2_0.html");
+    Pebble.openURL("https://rawgit.com/cfg1/pebble-m7s-wf-metar/master/pebble_m7s_metar_config_v2_5.html");
     
     //TODO: send some usefull values to the settings page (e. g. location, battery staistics etc.) by adding ?xxx to the URL
   }
